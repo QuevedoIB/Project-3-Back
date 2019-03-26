@@ -40,7 +40,7 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
 
 
 router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, email, password, imageUrl, quote, preferences } = req.body;
 
   User.findOne({
     username
@@ -58,7 +58,11 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
 
       const newUser = new User({
         username,
+        email,
         password: hashPass,
+        imageUrl,
+        quote,
+        preferences
       });
 
       return newUser.save().then(() => {
