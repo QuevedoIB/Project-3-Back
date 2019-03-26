@@ -14,8 +14,8 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
   const { username, password } = req.body;
 
   User.findOne({
-      username
-    })
+    username
+  })
     .then((user) => {
       if (!user) {
         const err = new Error('Not Found');
@@ -43,8 +43,8 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
   const { username, password } = req.body;
 
   User.findOne({
-      username
-    }, 'username')
+    username
+  }, 'username')
     .then((userExists) => {
       if (userExists) {
         const err = new Error('Unprocessable Entity');
@@ -56,14 +56,17 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
       const salt = bcrypt.genSaltSync(10);
       const hashPass = bcrypt.hashSync(password, salt);
 
-      const newUser = User({
+      const newUser = new User({
         username,
         password: hashPass,
       });
 
       return newUser.save().then(() => {
+
+        //delete password missing
         req.session.currentUser = newUser;
-        res.json(newUser);
+
+        res.status(200).json(newUser);
       });
     })
     .catch(next);
