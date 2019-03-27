@@ -27,12 +27,12 @@ const userSchema = new Schema({
   },
   preferences: {
     type: Array
-  }
-  // matches: [{
-  //   type: ObjectId,
-  //   ref: 'User',
-  //   required: true
-  // }],
+  },
+  matches: [{
+    type: ObjectId,
+    ref: 'User',
+    required: true
+  }],
   // personality: {
   //   type: Array
   // }
