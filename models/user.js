@@ -22,17 +22,17 @@ const userSchema = new Schema({
   quote:{
     type: String
   },
-  preferences: {
-    type: [String]
-  },
-  matches: {
-    type: [ObjectId],
-    ref: 'User',
-    required: true
-  },
-  personality: {
-    type: [Object]
-  }
+  // preferences: {
+  //   type: [String]
+  // },
+  // matches: {
+  //   type: [ObjectId],
+  //   ref: 'User',
+  //   required: true
+  // },
+  // personality: {
+  //   type: [Object]
+  // }
 }, {
   timestamps: {
     createdAt: 'created_at',

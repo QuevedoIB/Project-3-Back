@@ -7,14 +7,17 @@ Timder is a social web application that groups people based on their personality
 ## User Stories
 
 -  **404:** As an anon/user I can see a 404 page if I try to reach a page that does not exist so that I know it's my fault
--  **Signup:** As an anon I can sign up in the platform.
--  **Login:** As a user I can login to the platform.
+-  **Signup:** As an anon I can sign up in the platform so I can use all the features.
+-  **Login:** As a user I can login to the platform so I can use all the features.
 -  **Logout:** As a user I can logout from the platform so no one else can use it.
--  **Stablish my preferences** As a user I can do a personality test and stablish my social preferences.
--  **List people** As a user I want to see a list of people that matches my preferences.
--  **Accept/decline matches** As a user I want to accept or decline matches so I can start talking with them.
--  **Chat** As a user I want to talk with the people I matched.
--  **Poll to show hide image** As a user I want be able to show hide my image with the people I matched.
+-  **Stablish my preferences** As a user I can do a personality test so I can stablish my social preferences.
+-  **List people** As a user I want to see a list of people that matches my preferences so I can add them.
+-  **Accept matches** As a user I want to accept matches so I can start talking with them.
+-  **Decline matches** As a user I want to decline matches so I can reject talking with them.
+-  **Chat** As a user I want to talk with the people I matched so I can know them better.
+-  **Poll to show hide image** As a user I want be able to show hide my image with the people I matched so I can decide when others can see me.
+-  **My profile** As a user I want to be able to go my profile and change data so I can modify things.
+-  **See my contacts profile** As a user I want to see my contacts profile so I can know more about them.
 
 ## Backlog
 
@@ -101,6 +104,9 @@ Timder is a social web application that groups people based on their personality
    - Input: Profile
    - Output: Message
 
+-Navbar
+    - Input: Logout
+             My profile
 
 ## Services
 
