@@ -6,11 +6,13 @@ const ObjectId = Schema.Types.ObjectId;
 const userSchema = new Schema({
   username: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   password: {
     type: String,
@@ -18,26 +20,23 @@ const userSchema = new Schema({
   },
   imageUrl: {
     type: String,
+    default: 'https://www.caduceosalud.es/wp-content/uploads/2013/09/silueta.png'
   },
-  quote:{
+  quote: {
     type: String
   },
-  // preferences: {
-  //   type: [String]
-  // },
-  // matches: {
-  //   type: [ObjectId],
+  preferences: {
+    type: Array
+  }
+  // matches: [{
+  //   type: ObjectId,
   //   ref: 'User',
   //   required: true
-  // },
+  // }],
   // personality: {
-  //   type: [Object]
+  //   type: Array
   // }
-}, {
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-  },
+
 });
 
 const User = mongoose.model('User', userSchema);
