@@ -25,17 +25,17 @@ const userSchema = new Schema({
   quote: {
     type: String
   },
-  preferences: {
+  interests: {
+    type: Array
+  },
+  personality: {
     type: Array
   },
   matches: [{
     type: ObjectId,
     ref: 'User',
     required: true
-  }],
-  // personality: {
-  //   type: Array
-  // }
+  }]
 
 });
 

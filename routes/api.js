@@ -43,6 +43,8 @@ const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/midd
 // });
 
 
+
+
 router.get('/:id/contacts', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
   const { _id } = req.session.currentUser;
@@ -72,7 +74,13 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
         
       if (inContacts.length > 0) {
         const contact = await User.findById(contactId);
-        res.json(contact);
+        const dataContact = {
+          id: contact.id,
+          username: contact.username,
+          quote: contact.quote,
+          interests: contact.interests
+        }
+        res.json(dataContact);
       } else {
         const err = new Error('Unauthorized');
         err.status = 401;
