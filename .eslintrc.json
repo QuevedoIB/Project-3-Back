@@ -7,11 +7,21 @@
     "extends": "standard",
     "globals": {
         "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
+        "SharedArrayBuffer": "readonly",
+        "fetch": true,
+        "mapboxgl": true
     },
     "parserOptions": {
         "ecmaVersion": 2018
     },
     "rules": {
+        "indent": [
+            2,
+            2
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
     }
 }
