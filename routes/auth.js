@@ -21,7 +21,7 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
         const err = new Error('Not Found');
         err.status = 404;
         err.statusMessage = 'Not Found';
-        next(err)
+        next(err);
       }
       if (bcrypt.compareSync(password, user.password)) {
         delete user.password;
@@ -38,10 +38,11 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
     .catch(next);
 });
 
-
 router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
-  const { username, email, password, imageUrl, quote, interests, personality} = req.body;
-  console.log(username);
+  console.log(req.body);
+
+  const { username, email, password, imageUrl, quote, interests, personality } = req.body;
+
   User.findOne({
     username
   }, 'username')
@@ -62,13 +63,12 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
         password: hashPass,
         imageUrl,
         quote,
-        interests, 
+        interests,
         personality
       });
 
       return newUser.save().then(() => {
-
-        //delete password missing
+        // delete password missing
         req.session.currentUser = newUser;
 
         res.status(200).json(newUser);
