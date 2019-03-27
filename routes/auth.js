@@ -25,7 +25,6 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
       }
       if (bcrypt.compareSync(password, user.password)) {
         delete user.password;
-        console.log(user);
         req.session.currentUser = user;
         return res.status(200).json(user);
       } else {
@@ -39,8 +38,6 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
 });
 
 router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
-  console.log(req.body);
-
   const { username, email, password, imageUrl, quote, interests, personality } = req.body;
 
   User.findOne({

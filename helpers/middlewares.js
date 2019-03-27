@@ -27,8 +27,9 @@ exports.validationLoggin = () => (req, res, next) => {
     const err = new Error('Unprocessable Entity');
     err.status = 422;
     err.statusMessage = 'Validation error';
-    next(err)
+    next(err);
   } else {
     next();
   }
 }
+;

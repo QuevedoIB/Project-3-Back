@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const User = require('../models/User');
+const User = require('../models/user');
 
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
-//POSIBLE PROBLEMA? SE PUEDE ACCEDER A TODA LA INFO DEL USER
-
+// POSIBLE PROBLEMA? SE PUEDE ACCEDER A TODA LA INFO DEL USER
 
 // router.get('/users', async (req, res, next) => {
 //   try {
@@ -20,8 +19,6 @@ const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/midd
 //     next(error);
 //   }
 // });
-
-
 
 // router.get('/users/:id', async (req, res, next) => {
 //   const { id } = req.params;
@@ -42,9 +39,6 @@ const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/midd
 //   }
 // });
 
-
-
-
 router.get('/:id/contacts', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
   const { _id } = req.session.currentUser;
@@ -58,7 +52,6 @@ router.get('/:id/contacts', isLoggedIn(), async (req, res, next) => {
       err.statusMessage = 'Unauthorized';
       next(err);
     }
-
   } catch (error) {
     next(error);
   }
@@ -71,7 +64,7 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
     if (id === _id) {
       const user = await User.findById(id);
       const inContacts = user.matches.filter(e => e.equals(contactId));
-        
+
       if (inContacts.length > 0) {
         const contact = await User.findById(contactId);
         const dataContact = {
@@ -79,7 +72,7 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
           username: contact.username,
           quote: contact.quote,
           interests: contact.interests
-        }
+        };
         res.json(dataContact);
       } else {
         const err = new Error('Unauthorized');
@@ -87,16 +80,13 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
         err.statusMessage = 'Unauthorized';
         next(err);
       }
-
     } else {
       const err = new Error('Unauthorized');
       err.status = 401;
       err.statusMessage = 'Unauthorized';
       next(err);
     }
-
   } catch (error) {
     next(error);
   }
 });
-

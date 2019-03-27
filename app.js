@@ -11,6 +11,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const auth = require('./routes/auth');
+const profile = require('./routes/profile');
 
 mongoose.connect(process.env.MONGODB_URI, {
   keepAlive: true,
@@ -20,8 +21,7 @@ mongoose.connect(process.env.MONGODB_URI, {
   console.log(`Connected to database`);
 }).catch((error) => {
   console.error(error);
-})
-
+});
 
 const app = express();
 
@@ -57,6 +57,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', auth);
+app.use('/profile', profile);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -69,7 +70,7 @@ app.use((err, req, res, next) => {
 
   // only render if the error ocurred before sending the response
   if (!res.headersSent) {
-    const statusError = err.status || '500' 
+    const statusError = err.status || '500';
     res.status(statusError).json(err);
   }
 });
