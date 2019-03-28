@@ -33,8 +33,35 @@ const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/midd
 //       quote: user.quote,
 //       preferences: user.preferences
 //     }
-//     res.json({ message: 'User found', data: dataUser });
-//   } catch (error) {
+
+//     if (id === _id) {
+//       const user = await User.findById(id);
+//       res.json(user.matches);
+//     } else {
+//       const err = new Error('Unauthorized');
+//       err.status = 401;
+//       err.statusMessage = 'Unauthorized';
+//       next(err);
+//     } ences
+//     //     }
+//     //     res.json({ mess if (id === _id) {
+//     const user = await User.findById(id);
+//     res.json(user.matches);
+//   } else {
+//     const err = new Error('Unauthorized');
+//     err.status = 401;
+//     err.statusMessage = 'Unauthorized';
+//     next(err);
+//   } found', data: dataUser });
+//   //   } catch (error) { if (id === _id) {
+//   const user = await User.findById(id);
+//   res.json(user.matches);
+// } else {
+//     const err = new Error('Unauthorized');
+//     err.status = 401;
+//     err.statusMessage = 'Unauthorized';
+//     next(err);
+//   }
 //     next(error);
 //   }
 // });
@@ -90,3 +117,25 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
     next(error);
   }
 });
+
+router.post('/search-people', isLoggedIn(), async (req, res, next) => {
+  console.log('HOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOLA LLEGA');
+
+  const { personality, location } = req.body;
+
+  const currentUser = req.session.currentUser;
+
+  try {
+    const foundUser = await User.findOne();
+
+    console.log(foundUser);
+
+    if (foundUser) {
+      res.status(200).json(foundUser);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = router;

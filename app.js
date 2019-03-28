@@ -10,6 +10,7 @@ const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
 require('dotenv').config();
 
+const api = require('./routes/api');
 const auth = require('./routes/auth');
 const profile = require('./routes/profile');
 
@@ -56,6 +57,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/api', api);
 app.use('/auth', auth);
 app.use('/profile', profile);
 
