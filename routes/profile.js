@@ -105,6 +105,7 @@ router.get('/matches', isLoggedIn(), async (req, res, next) => {
 
   try {
     const user = await User.findById(_id).populate('matches');
+    console.log('USER BACK END: ', user.matches);
     res.status(200);
     res.json(user.matches);
   } catch (error) {
