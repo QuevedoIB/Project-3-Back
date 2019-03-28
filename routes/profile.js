@@ -94,7 +94,7 @@ router.post('/decline-contact/:userToDeclineId', isLoggedIn(), async (req, res, 
 
       const pending = userToDecline.pending.filter(e => e !== currentUserId);
 
-      const matches = currentUser.filter(e => e !== userToDeclineId);
+      const matches = currentUser.matches.filter(e => e !== userToDeclineId);
 
       const userWithoutInvite = await User.findByIdAndUpdate(currentUserId, { $set: { matches } }, { new: true });
 
