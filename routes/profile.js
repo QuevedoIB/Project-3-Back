@@ -105,8 +105,21 @@ router.get('/matches', isLoggedIn(), async (req, res, next) => {
 
   try {
     const user = await User.findById(_id).populate('matches');
+
+    const dataMatches = user.matches.map(e => {
+      const object = {
+        username: e.username,
+        imageUrl: e.imageUrl,
+        quote: e.quote,
+        interests: e.interests
+      };
+      return object;
+    });
+
+    console.log(dataMatches);
+
     res.status(200);
-    res.json(user.matches);
+    res.json(dataMatches);
   } catch (error) {
     next(error);
   }
@@ -117,6 +130,21 @@ router.get('/contacts', isLoggedIn(), async (req, res, next) => {
 
   try {
     const user = await User.findById(_id).populate('contacts');
+
+    console.log(user);
+
+    const dataContacts = user.contacts.map(e => {
+      const object = {
+        username: e.username,
+        imageUrl: e.imageUrl,
+        quote: e.quote,
+        interests: e.interests
+      };
+      return object;
+    });
+
+    console.log(dataContacts);
+
     res.status(200);
     res.json(user.contacts);
   } catch (error) {
