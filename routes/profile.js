@@ -67,12 +67,17 @@ router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) =>
 
     if (!user.contacts.includes(userToAddId)) {
       const contacts = [userToAddId, ...user.contacts];
-      const userWithContact = await User.findByIdAndUpdate(currentUserId, { $set: { contacts } });
+      await User.findByIdAndUpdate(currentUserId, { $pull: { matches: userToAddId } });
+      await User.findByIdAndUpdate(userToAddId, { $pull: { pending: currentUserId } })
+      await User.findByIdAndUpdate(userToAddId, { $push: { contacts: currentUserId } })
+      const userWithContact = await User.findByIdAndUpdate(currentUserId, { $push: { contacts: userToAddId } });
       req.session.currentUser = userWithContact;
+      console.log('USER WITH CONTACT', userWithContact);
       res.status(200).json(userWithContact);
+    } else {
+      res.status(409).json({ message: 'User already added' });
     }
 
-    res.status(409).json({ message: 'User already added' });
   } catch (error) {
     next(error);
   }
@@ -175,6 +180,27 @@ router.get('/contact/:contactId', isLoggedIn(), async (req, res, next) => {
       res.json(dataContacts);
     } else {
       res.status(404).json({ message: 'Contact not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/contact/delete', isLoggedIn(), async (req, res, next) => {
+  const { userId, contactId } = req.body;
+  const { _id } = req.session.currentUser;
+  try {
+    console.log('CURRENT USER ID:', _id, userId)
+    if (userId === _id) {
+      const user = await User.findById(_id);
+      const userWithoutContact = await User.findByIdAndUpdate(userId, { $pull: { contacts: contactId } });
+      await User.findByIdAndUpdate(contactId, { $pull: { contacts: userId } });
+      res.status(200).json(userWithoutContact);
+    } else {
+      const err = new Error('Unauthorized');
+      err.status = 401;
+      err.statusMessage = 'Unauthorized';
+      next(err);
     }
   } catch (error) {
     next(error);
