@@ -6,65 +6,30 @@ const User = require('../models/user');
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
 // POSIBLE PROBLEMA? SE PUEDE ACCEDER A TODA LA INFO DEL USER
 
-// router.get('/users', async (req, res, next) => {
-//   try {
-//     const allUsers = await User.find();
-//     if (!allUsers.length) {
-//       res.status(404);
-//       res.json({ message: 'Users not found' });
-//       return;
-//     }
-//     res.json(allUsers);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+router.get('/users', async (req, res, next) => {
+  try {
+    const currentUser = req.session.currentUser._id;
+    const allUsers = await User.find({_id: {$ne : currentUser}});
 
-// router.get('/users/:id', async (req, res, next) => {
-//   const { id } = req.params;
-//   try {
-//     const user = await User.findById(id);
-//     res.status(200);
+    if (!allUsers.length) {
+      res.status(404);
+      res.json({ message: 'Users not found' });
+      return;
+    }
 
-//     //coger solo los campos públicos
-//     const dataUser = {
-//       id: user.id,
-//       username: user.username,
-//       quote: user.quote,
-//       preferences: user.preferences
-//     }
+    let usersArr = allUsers.map(e => {
+      e.email = '';
+      e.password = '';
+      return e;
+    });
+    
+    res.status(200);
+    res.json(usersArr);
+  } catch (error) {
+    next(error);
+  }
+});
 
-//     if (id === _id) {
-//       const user = await User.findById(id);
-//       res.json(user.matches);
-//     } else {
-//       const err = new Error('Unauthorized');
-//       err.status = 401;
-//       err.statusMessage = 'Unauthorized';
-//       next(err);
-//     } ences
-//     //     }
-//     //     res.json({ mess if (id === _id) {
-//     const user = await User.findById(id);
-//     res.json(user.matches);
-//   } else {
-//     const err = new Error('Unauthorized');
-//     err.status = 401;
-//     err.statusMessage = 'Unauthorized';
-//     next(err);
-//   } found', data: dataUser });
-//   //   } catch (error) { if (id === _id) {
-//   const user = await User.findById(id);
-//   res.json(user.matches);
-// } else {
-//     const err = new Error('Unauthorized');
-//     err.status = 401;
-//     err.statusMessage = 'Unauthorized';
-//     next(err);
-//   }
-//     next(error);
-//   }
-// });
 
 router.get('/:id/contacts', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
@@ -119,14 +84,18 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
 });
 
 router.post('/search-people', isLoggedIn(), async (req, res, next) => {
-  console.log('HOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOLA LLEGA');
 
   const { personality, location } = req.body;
 
   const currentUser = req.session.currentUser;
 
   try {
-    const foundUser = await User.findOne();
+    if (personality) {
+
+    } else {
+      const foundUser = await User.findOne();
+    }
+
 
     console.log(foundUser);
 
