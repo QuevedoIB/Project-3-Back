@@ -13,10 +13,8 @@ router.get('/users', async (req, res, next) => {
   const id = mongoose.Types.ObjectId(currentUserId);
   // const id = mongoose.mongo.BSONPure.ObjectID.fromHexString(currentUserId);
 
-  console.log(id);
-
   try {
-    const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { matches: { $nin: [currentUserId] } }, { pending: { $nin: [currentUserId] } }] });
+    const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { matches: { $nin: [currentUserId] } }, { pending: { $nin: [currentUserId] } }, { contacts: { $nin: [currentUserId] } }] });
 
     if (!allUsers.length) {
       res.status(404);
@@ -79,7 +77,7 @@ router.post('/send-match', isLoggedIn(), async (req, res, next) => {
   try {
     const userToMatch = await User.findById(userToMatchId);
 
-    if (!userToMatch.matches.includes(currentUser._id) && currentUser.pending.includes(userToMatchId)) {
+    if (!userToMatch.matches.includes(currentUser._id) && !currentUser.pending.includes(userToMatchId)) {
       const pending = [userToMatchId, ...currentUser.pending];
       const matches = [currentUser._id, ...userToMatch.matches];
       await User.findByIdAndUpdate(userToMatchId, { $set: { matches } });
