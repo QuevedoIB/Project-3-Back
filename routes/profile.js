@@ -108,6 +108,7 @@ router.get('/matches', isLoggedIn(), async (req, res, next) => {
 
     const dataMatches = user.matches.map(e => {
       const object = {
+        _id: e._id,
         username: e.username,
         imageUrl: e.imageUrl,
         quote: e.quote,
@@ -135,6 +136,7 @@ router.get('/contacts', isLoggedIn(), async (req, res, next) => {
 
     const dataContacts = user.contacts.map(e => {
       const object = {
+        _id: e._id,
         username: e.username,
         imageUrl: e.imageUrl,
         quote: e.quote,
