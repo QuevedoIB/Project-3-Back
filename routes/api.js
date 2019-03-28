@@ -35,40 +35,6 @@ router.get('/users', async (req, res, next) => {
   }
 });
 
-router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
-  const { id, contactId } = req.params;
-  const { _id } = req.session.currentUser;
-  try {
-    if (id === _id) {
-      const user = await User.findById(id);
-      const inContacts = user.matches.filter(e => e.equals(contactId));
-
-      if (inContacts.length > 0) {
-        const contact = await User.findById(contactId);
-        const dataContact = {
-          id: contact.id,
-          username: contact.username,
-          quote: contact.quote,
-          interests: contact.interests
-        };
-        res.json(dataContact);
-      } else {
-        const err = new Error('Unauthorized');
-        err.status = 401;
-        err.statusMessage = 'Unauthorized';
-        next(err);
-      }
-    } else {
-      const err = new Error('Unauthorized');
-      err.status = 401;
-      err.statusMessage = 'Unauthorized';
-      next(err);
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
 router.post('/send-match', isLoggedIn(), async (req, res, next) => {
   const userToMatchId = req.body.id;
 
