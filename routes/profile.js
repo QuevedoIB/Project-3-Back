@@ -186,4 +186,25 @@ router.get('/contact/:contactId', isLoggedIn(), async (req, res, next) => {
   }
 });
 
+router.post('/contact/delete', isLoggedIn(), async (req, res, next) => {
+  const { userId, contactId } = req.body;
+  const { _id } = req.session.currentUser;
+  try {
+    console.log('CURRENT USER ID:', _id, userId)
+    if (userId === _id) {
+      const user = await User.findById(_id);
+      const userWithoutContact = await User.findByIdAndUpdate(userId, { $pull: { contacts: contactId } });
+      await User.findByIdAndUpdate(contactId, { $pull: { contacts: userId } });
+      res.status(200).json(userWithoutContact);
+    } else {
+      const err = new Error('Unauthorized');
+      err.status = 401;
+      err.statusMessage = 'Unauthorized';
+      next(err);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
