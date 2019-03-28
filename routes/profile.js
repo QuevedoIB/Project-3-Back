@@ -53,12 +53,17 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-router.post('/add-contact', isLoggedIn(), async (req, res, next) => {
-  const { userToAddId } = req.body;
+router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) => {
+  const { userToAddId } = req.params;
+
+  console.log(userToAddId);
+
   const currentUserId = req.session.currentUser._id;
 
   try {
     const user = await User.findById(currentUserId);
+
+    console.log(user.contacts, 'CONTAAAAAAAAAAAAAAAAAAAAACTS');
 
     if (!user.contacts.includes(userToAddId)) {
       const contacts = [userToAddId, ...user.contacts];
@@ -73,12 +78,17 @@ router.post('/add-contact', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-router.post('/decline-contact', isLoggedIn(), async (req, res, next) => {
-  const { userToDeclineId } = req.body;
+router.post('/decline-contact/:userToDeclineId', isLoggedIn(), async (req, res, next) => {
+  const { userToDeclineId } = req.params;
+
+  console.log(userToDeclineId);
+
   const currentUserId = req.session.currentUser._id;
   const currentUser = req.session.currentUser;
 
   try {
+    console.log(currentUser.matches);
+
     if (currentUser.matches.includes(userToDeclineId)) {
       const userToDecline = await User.findById(userToDeclineId);
 
@@ -130,8 +140,6 @@ router.get('/contacts', isLoggedIn(), async (req, res, next) => {
   try {
     const user = await User.findById(_id).populate('contacts');
 
-    console.log(user);
-
     const dataContacts = user.contacts.map(e => {
       const object = {
         _id: e._id,
@@ -144,7 +152,30 @@ router.get('/contacts', isLoggedIn(), async (req, res, next) => {
     });
 
     res.status(200);
-    res.json(user.contacts);
+    res.json(dataContacts);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/contact/:contactId', isLoggedIn(), async (req, res, next) => {
+  const { contactId } = req.params;
+
+  try {
+    const contact = await User.findById(contactId);
+
+    if (contact) {
+      const dataContacts = {
+        _id: contact._id,
+        username: contact.username,
+        quote: contact.quote,
+        interests: contact.interests
+      };
+      res.status(200);
+      res.json(dataContacts);
+    } else {
+      res.status(404).json({ message: 'Contact not found' });
+    }
   } catch (error) {
     next(error);
   }
