@@ -31,7 +31,6 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
     if (bcrypt.compareSync(currentPassword, currentUser.password)) {
       let editedUser;
       if (password) {
-        console.log(password, 'HAY CONTASEÑAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
         const salt = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
 
@@ -51,6 +50,46 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
     }
   } catch (err) {
     next(err);
+  }
+});
+
+router.post('/add-contact', isLoggedIn(), async (req, res, next) => {
+  const { userToAddId } = req.body;
+  const currentUserId = req.session.currentUser._id;
+
+  try {
+    const user = await User.findById(currentUserId);
+
+    if (!user.contacts.includes(userToAddId)) {
+      const contacts = [userToAddId, ...user.contacts];
+      const userWithContact = await User.findByIdAndUpdate(currentUserId, { $set: { contacts } });
+      req.session.currentUser = userWithContact;
+      res.status(200).json(userWithContact);
+    }
+
+    res.status(409).json({ message: 'User already added' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/decline-contact', isLoggedIn(), async (req, res, next) => {
+  const { userToDeclineId } = req.body;
+  const currentUserId = req.session.currentUser._id;
+
+  try {
+    const user = await User.findById(currentUserId);
+
+    if (user.matches.includes(userToDeclineId)) {
+      const matches = [userToDeclineId, ...user.matches];
+      const userWithoutInvite = await User.findByIdAndUpdate(currentUserId, { $set: { matches } });
+      req.session.currentUser = userWithoutInvite;
+      res.status(200).json(userWithoutInvite);
+    } else {
+      res.status(409).json({ message: 'User already declined' });
+    }
+  } catch (error) {
+    next(error);
   }
 });
 

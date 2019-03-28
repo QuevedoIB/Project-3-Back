@@ -9,7 +9,7 @@ const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/midd
 router.get('/users', async (req, res, next) => {
   try {
     const currentUser = req.session.currentUser._id;
-    const allUsers = await User.find({_id: {$ne : currentUser}});
+    const allUsers = await User.find({ _id: { $ne: currentUser } });
 
     if (!allUsers.length) {
       res.status(404);
@@ -22,14 +22,13 @@ router.get('/users', async (req, res, next) => {
       e.password = '';
       return e;
     });
-    
+
     res.status(200);
     res.json(usersArr);
   } catch (error) {
     next(error);
   }
 });
-
 
 router.get('/:id/contacts', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
@@ -83,24 +82,19 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-router.post('/search-people', isLoggedIn(), async (req, res, next) => {
-
-  const { personality, location } = req.body;
-
-  const currentUser = req.session.currentUser;
+router.post('/send-match', isLoggedIn(), async (req, res, next) => {
+  const { userToMatchId } = req.body;
+  const currentUserId = req.session.currentUser._id;
 
   try {
-    if (personality) {
+    const userToMatch = await User.findById(userToMatchId);
 
+    if (!userToMatch.matches.includes(currentUserId)) {
+      const matches = [currentUserId, ...userToMatch.matches];
+      await User.findByIdAndUpdate(userToMatchId, { $set: { matches } });
+      res.status(200).json({ message: 'Match sent' });
     } else {
-      const foundUser = await User.findOne();
-    }
-
-
-    console.log(foundUser);
-
-    if (foundUser) {
-      res.status(200).json(foundUser);
+      res.status(409).json({ message: 'Match already sent' });
     }
   } catch (error) {
     next(error);
