@@ -67,12 +67,17 @@ router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) =>
 
     if (!user.contacts.includes(userToAddId)) {
       const contacts = [userToAddId, ...user.contacts];
-      const userWithContact = await User.findByIdAndUpdate(currentUserId, { $set: { contacts } });
+      await User.findByIdAndUpdate(currentUserId, { $pull: { matches: userToAddId } });
+      await User.findByIdAndUpdate(userToAddId, { $pull: { pending: currentUserId } })
+      await User.findByIdAndUpdate(userToAddId, { $push: { contacts: currentUserId } })
+      const userWithContact = await User.findByIdAndUpdate(currentUserId, { $push: { contacts: userToAddId } });
       req.session.currentUser = userWithContact;
+      console.log('USER WITH CONTACT', userWithContact);
       res.status(200).json(userWithContact);
+    } else {
+      res.status(409).json({ message: 'User already added' });
     }
 
-    res.status(409).json({ message: 'User already added' });
   } catch (error) {
     next(error);
   }
