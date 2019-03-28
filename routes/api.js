@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const User = require('../models/user');
 
@@ -7,9 +8,17 @@ const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/midd
 // POSIBLE PROBLEMA? SE PUEDE ACCEDER A TODA LA INFO DEL USER
 
 router.get('/users', async (req, res, next) => {
+  const currentUserId = req.session.currentUser._id;
+
+  const id = mongoose.Types.ObjectId(currentUserId);
+  // const id = mongoose.mongo.BSONPure.ObjectID.fromHexString(currentUserId);
+
+  console.log(id);
+
   try {
-    const currentUser = req.session.currentUser._id;
-    const allUsers = await User.find({ _id: { $ne: currentUser } });
+    const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { matches: { $nin: [currentUserId] } }] });
+
+    console.log(allUsers);
 
     if (!allUsers.length) {
       res.status(404);
@@ -83,7 +92,9 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
 });
 
 router.post('/send-match', isLoggedIn(), async (req, res, next) => {
-  const { userToMatchId } = req.body;
+  const userToMatchId = req.body.id;
+  console.log(req.body);
+  console.log(userToMatchId, 'HOOOOOOOOOOOOOOOOOOOOOOOOLA');
   const currentUserId = req.session.currentUser._id;
 
   try {

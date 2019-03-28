@@ -30,7 +30,7 @@ const userSchema = new Schema({
   personality: {
     type: Array
   },
-  invites: [{
+  matches: [{
     type: ObjectId,
     ref: 'User'
   }],
