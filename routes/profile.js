@@ -53,12 +53,17 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-router.post('/add-contact', isLoggedIn(), async (req, res, next) => {
-  const { userToAddId } = req.body;
+router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) => {
+  const { userToAddId } = req.params;
+
+  console.log(userToAddId);
+
   const currentUserId = req.session.currentUser._id;
 
   try {
     const user = await User.findById(currentUserId);
+
+    console.log(user.contacts, 'CONTAAAAAAAAAAAAAAAAAAAAACTS');
 
     if (!user.contacts.includes(userToAddId)) {
       const contacts = [userToAddId, ...user.contacts];
@@ -73,12 +78,17 @@ router.post('/add-contact', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-router.post('/decline-contact', isLoggedIn(), async (req, res, next) => {
-  const { userToDeclineId } = req.body;
+router.post('/decline-contact/:userToDeclineId', isLoggedIn(), async (req, res, next) => {
+  const { userToDeclineId } = req.params;
+
+  console.log(userToDeclineId);
+
   const currentUserId = req.session.currentUser._id;
   const currentUser = req.session.currentUser;
 
   try {
+    console.log(currentUser.matches);
+
     if (currentUser.matches.includes(userToDeclineId)) {
       const userToDecline = await User.findById(userToDeclineId);
 
