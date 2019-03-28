@@ -76,18 +76,49 @@ router.post('/add-contact', isLoggedIn(), async (req, res, next) => {
 router.post('/decline-contact', isLoggedIn(), async (req, res, next) => {
   const { userToDeclineId } = req.body;
   const currentUserId = req.session.currentUser._id;
+  const currentUser = req.session.currentUser;
 
   try {
-    const user = await User.findById(currentUserId);
+    if (currentUser.matches.includes(userToDeclineId)) {
+      const userToDecline = await User.findById(userToDeclineId);
 
-    if (user.matches.includes(userToDeclineId)) {
-      const matches = [userToDeclineId, ...user.matches];
-      const userWithoutInvite = await User.findByIdAndUpdate(currentUserId, { $set: { matches } });
+      const pending = userToDecline.pending.filter(e => e !== currentUserId);
+
+      const matches = currentUser.filter(e => e !== userToDeclineId);
+
+      const userWithoutInvite = await User.findByIdAndUpdate(currentUserId, { $set: { matches } }, { new: true });
+
+      await User.findByIdAndUpdate(userToDeclineId, { $set: { pending } }, { new: true });
+
       req.session.currentUser = userWithoutInvite;
       res.status(200).json(userWithoutInvite);
     } else {
       res.status(409).json({ message: 'User already declined' });
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/matches', isLoggedIn(), async (req, res, next) => {
+  const { _id } = req.session.currentUser;
+
+  try {
+    const user = await User.findById(_id).populate('matches');
+    res.status(200);
+    res.json(user.matches);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/contacts', isLoggedIn(), async (req, res, next) => {
+  const { _id } = req.session.currentUser;
+
+  try {
+    const user = await User.findById(_id).populate('contacts');
+    res.status(200);
+    res.json(user.contacts);
   } catch (error) {
     next(error);
   }

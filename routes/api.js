@@ -16,9 +16,7 @@ router.get('/users', async (req, res, next) => {
   console.log(id);
 
   try {
-    const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { matches: { $nin: [currentUserId] } }] });
-
-    console.log(allUsers);
+    const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { matches: { $nin: [currentUserId] } }, { pending: { $nin: [currentUserId] } }] });
 
     if (!allUsers.length) {
       res.status(404);
@@ -34,24 +32,6 @@ router.get('/users', async (req, res, next) => {
 
     res.status(200);
     res.json(usersArr);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get('/:id/contacts', isLoggedIn(), async (req, res, next) => {
-  const { id } = req.params;
-  const { _id } = req.session.currentUser;
-  try {
-    if (id === _id) {
-      const user = await User.findById(id);
-      res.json(user.matches);
-    } else {
-      const err = new Error('Unauthorized');
-      err.status = 401;
-      err.statusMessage = 'Unauthorized';
-      next(err);
-    }
   } catch (error) {
     next(error);
   }
@@ -93,16 +73,17 @@ router.get('/:id/contacts/:contactId', isLoggedIn(), async (req, res, next) => {
 
 router.post('/send-match', isLoggedIn(), async (req, res, next) => {
   const userToMatchId = req.body.id;
-  console.log(req.body);
-  console.log(userToMatchId, 'HOOOOOOOOOOOOOOOOOOOOOOOOLA');
-  const currentUserId = req.session.currentUser._id;
+
+  const currentUser = req.session.currentUser;
 
   try {
     const userToMatch = await User.findById(userToMatchId);
 
-    if (!userToMatch.matches.includes(currentUserId)) {
-      const matches = [currentUserId, ...userToMatch.matches];
+    if (!userToMatch.matches.includes(currentUser._id) && currentUser.pending.includes(userToMatchId)) {
+      const pending = [userToMatchId, ...currentUser.pending];
+      const matches = [currentUser._id, ...userToMatch.matches];
       await User.findByIdAndUpdate(userToMatchId, { $set: { matches } });
+      await User.findByIdAndUpdate(currentUser._id, { $set: { pending } });
       res.status(200).json({ message: 'Match sent' });
     } else {
       res.status(409).json({ message: 'Match already sent' });

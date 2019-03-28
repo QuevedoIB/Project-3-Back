@@ -37,6 +37,10 @@ const userSchema = new Schema({
   contacts: [{
     type: ObjectId,
     ref: 'User'
+  }],
+  pending: [{
+    type: ObjectId,
+    ref: 'User'
   }]
 });
 
