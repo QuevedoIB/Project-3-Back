@@ -84,18 +84,12 @@ router.post('/decline-contact/:userToDeclineId', isLoggedIn(), async (req, res, 
 
   try {
     if (currentUser.matches.includes(userToDeclineId)) {
-      const userToDecline = await User.findById(userToDeclineId);
+      const userWithoutMatch = await User.findByIdAndUpdate(currentUserId, { $pull: { matches: userToDeclineId } }, { new: true });
 
-      const pending = userToDecline.pending.filter(e => e !== currentUserId);
+      await User.findByIdAndUpdate(userToDeclineId, { $pull: { pending: currentUserId } }, { new: true });
 
-      const matches = currentUser.matches.filter(e => e !== userToDeclineId);
-
-      const userWithoutInvite = await User.findByIdAndUpdate(currentUserId, { $set: { matches } }, { new: true });
-
-      await User.findByIdAndUpdate(userToDeclineId, { $set: { pending } }, { new: true });
-
-      req.session.currentUser = userWithoutInvite;
-      res.status(200).json(userWithoutInvite);
+      req.session.currentUser = userWithoutMatch;
+      res.status(200).json(userWithoutMatch);
     } else {
       res.status(409).json({ message: 'User already declined' });
     }
