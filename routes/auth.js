@@ -39,7 +39,7 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
 
 router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
   const { username, email, password, imageUrl, quote, interests, personality } = req.body;
-
+  console.log(req.body);
   User.findOne({
     username
   }, 'username')

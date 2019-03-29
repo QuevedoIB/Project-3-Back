@@ -6,13 +6,13 @@ const ObjectId = Schema.Types.ObjectId;
 
 const chatSchema = new Schema({
   history: {
-    type: [String]
+    type: Array
   },
-  users: {
-    type: [ObjectId],
+  users: [{
+    type: ObjectId,
     ref: 'User',
     required: true
-  }
+  }]
 });
 
 const Chat = mongoose.model('Chat', chatSchema);

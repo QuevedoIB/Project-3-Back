@@ -8,11 +8,16 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
+
+const socket = require('socket.io');
+const server = require('./bin/www');
+
 require('dotenv').config();
 
 const api = require('./routes/api');
 const auth = require('./routes/auth');
 const profile = require('./routes/profile');
+const chat = require('./routes/chat');
 
 mongoose.connect(process.env.MONGODB_URI, {
   keepAlive: true,
@@ -25,6 +30,18 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 const app = express();
+
+
+// io = socket(server);
+
+
+// io.on('connection', (socket) => {
+//   console.log(socket.id);
+
+//   socket.on('SEND_MESSAGE', function(data){
+//       io.emit('RECEIVE_MESSAGE', data);
+//   })
+// });
 
 app.use(cors({
   credentials: true,
@@ -60,6 +77,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', api);
 app.use('/auth', auth);
 app.use('/profile', profile);
+app.use('/chat', chat);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
