@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Chat = require('../models/chat');
-
+const User = require('../models/user');
 
 router.post('/create', async (req, res, next) => {
   const { contactId } = req.body;
@@ -9,11 +9,11 @@ router.post('/create', async (req, res, next) => {
 
   try {
 
-    const isChat = await Chat.findOne({ users: { $in: [id, user._id] } });
+    const isChat = await Chat.findOne({ users: { $in: [contactId, _id] } });
 
     if (!isChat) {
 
-      const contact = await user.findById(contactId);
+      const contact = await User.findById(contactId);
       const contactData = {
         _id: contact._id,
         imageUrl: contact.imageUrl,
