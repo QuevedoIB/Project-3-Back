@@ -8,21 +8,19 @@ router.post('/create', async (req, res, next) => {
   const { _id } = req.session.currentUser;
 
   try {
-
-    const isChat = await Chat.findOne({ users: { $in: [contactId, _id] } });
+    const isChat = await Chat.findOne({ $and: [{ users: { $in: [contactId] } }, { users: { $in: [_id] } }] });
 
     if (!isChat) {
-
       const contact = await User.findById(contactId);
       const contactData = {
         _id: contact._id,
         imageUrl: contact.imageUrl,
         username: contact.username
-      }
+      };
       const newChat = {
         history: [],
         users: [_id, contactId]
-      }
+      };
       const createdChat = await Chat.create(newChat);
 
       const data = {
@@ -30,29 +28,29 @@ router.post('/create', async (req, res, next) => {
         contact: contactData,
         log: createdChat.history
       };
-      console.log(data);
       res.status(200);
-      res.json(data)
-
-    } else {
-      res.status(409);
-      res.json({ message: "Error creating the chat" })
+      res.json(data);
     }
+
+    res.json({ message: 'Already created' });
   } catch (error) {
-    next(error)
+    next(error);
   }
 });
 
 router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
   const user = req.session.currentUser;
+
+  console.log(id);
+
   try {
-    const contact = await user.findById(id);
+    const contact = await User.findById(id);
     const contactData = {
       _id: contact._id,
       imageUrl: contact.imageUrl,
       username: contact.username
-    }
+    };
 
     const chat = await Chat.findOne({ users: { $in: [id, user._id] } });
     const data = {
@@ -69,13 +67,10 @@ router.get('/:id', async (req, res, next) => {
       err.statusMessage = 'Not found';
       next(err);
     }
-
   } catch (error) {
     next(error);
   }
-
 });
-
 
 router.post('/send-message', async (req, res, next) => {
   const { id, message } = req.body;
@@ -88,13 +83,11 @@ router.post('/send-message', async (req, res, next) => {
       res.json(updateChat.history);
     } else {
       res.status(409);
-      res.json({ message: "Can't send the message" })
+      res.json({ message: "Can't send the message" });
     }
-
   } catch (error) {
     next(error);
   }
-
 });
 
 module.exports = router;
