@@ -6,20 +6,17 @@ const User = require('../models/user');
 
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
 
-// router.post('/edit', isLoggedIn(), (req, res, next) => {
-
-//   res.status(200).json({ message: req.body });
-// });
-
 router.post('/edit', isLoggedIn(), async (req, res, next) => {
   const { username, password, quote, interests, currentPassword } = req.body;
 
   const { currentUser } = req.session;
 
+  console.log(currentUser);
+
   try {
     if (username !== currentUser.username) {
       const userExists = await User.findOne({ username });
-
+      console.log('HOLA');
       if (userExists) {
         const err = new Error('Unprocessable Entity');
         err.status = 422;
@@ -43,6 +40,7 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
 
       return res.status(200).json(editedUser);
     } else {
+      console.log('ADIOS');
       const err = new Error('Unprocessable Entity');
       err.status = 422;
       err.statusMessage = 'Incorrect password';
@@ -56,14 +54,10 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
 router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) => {
   const { userToAddId } = req.params;
 
-  console.log(userToAddId);
-
   const currentUserId = req.session.currentUser._id;
 
   try {
     const user = await User.findById(currentUserId);
-
-    console.log(user.contacts, 'CONTAAAAAAAAAAAAAAAAAAAAACTS');
 
     if (!user.contacts.includes(userToAddId)) {
       const contacts = [userToAddId, ...user.contacts];
@@ -72,7 +66,7 @@ router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) =>
       await User.findByIdAndUpdate(userToAddId, { $push: { contacts: currentUserId } });
       const userWithContact = await User.findByIdAndUpdate(currentUserId, { $push: { contacts: userToAddId } });
       req.session.currentUser = userWithContact;
-      console.log('USER WITH CONTACT', userWithContact);
+
       res.status(200).json(userWithContact);
     } else {
       res.status(409).json({ message: 'User already added' });
@@ -85,14 +79,10 @@ router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) =>
 router.post('/decline-contact/:userToDeclineId', isLoggedIn(), async (req, res, next) => {
   const { userToDeclineId } = req.params;
 
-  console.log(userToDeclineId);
-
   const currentUserId = req.session.currentUser._id;
   const currentUser = req.session.currentUser;
 
   try {
-    console.log(currentUser.matches);
-
     if (currentUser.matches.includes(userToDeclineId)) {
       const userToDecline = await User.findById(userToDeclineId);
 
@@ -189,7 +179,6 @@ router.post('/contact/delete', isLoggedIn(), async (req, res, next) => {
   const { userId, contactId } = req.body;
   const { _id } = req.session.currentUser;
   try {
-    console.log('CURRENT USER ID:', _id, userId, contactId);
     if (userId === _id) {
       const user = await User.findById(_id);
       const userWithoutContact = await User.findByIdAndUpdate(userId, { $pull: { contacts: contactId } });

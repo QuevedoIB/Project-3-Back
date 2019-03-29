@@ -5,22 +5,12 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
-// POSIBLE PROBLEMA? SE PUEDE ACCEDER A TODA LA INFO DEL USER
 
 router.get('/users', async (req, res, next) => {
   const currentUserId = req.session.currentUser._id;
 
-  // const id = mongoose.Types.ObjectId(currentUserId);
-  // const id = mongoose.mongo.BSONPure.ObjectID.fromHexString(currentUserId);
-
   try {
     const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { matches: { $nin: [currentUserId] } }, { pending: { $nin: [currentUserId] } }, { contacts: { $nin: [currentUserId] } }] });
-
-    // if (!allUsers.length) {
-    //   res.status(404);
-    //   res.json({ message: 'Users not found' });
-    //   return;
-    // }
 
     let usersArr = allUsers.map(e => {
       e.email = '';
