@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Chat = require('../models/chat');
+const Message = require('../models/message');
 const User = require('../models/user');
 
 const SocketManager = require('../SocketManager');
@@ -53,8 +54,12 @@ router.get('/:id', async (req, res, next) => {
       username: contact.username
     };
 
+<<<<<<< HEAD
     const chat = await Chat.findOne({ users: { $in: [id, user._id] } });
 
+=======
+    const chat = await Chat.findOne({ users: { $in: [id, user._id] } }).populate('history');
+>>>>>>> c6f7ef24456687d3c1d9b1474f0be8cbf58ab779
     const data = {
       _id: chat._id,
       contact: contactData,
@@ -76,18 +81,29 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/send-message', async (req, res, next) => {
   const { id, message } = req.body;
-
+  const { _id } = req.session.currentUser;
   try {
-    const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: message } }, { new: true });
-
-    if (updateChat) {
-      SocketManager.messageReceived(updateChat._id);
-      res.status(200);
-      res.json(updateChat.history);
+    const newMessage = {
+      text: message,
+      user: _id,
+      date: Date.now
+    }
+    const createdMessage = await Message.create(newMessage);
+    if (createdMessage) {
+      const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: createdMessage } }, { new: true });
+      if (updateChat) {
+        SocketManager.messageReceived(updateChat._id);
+        res.status(200);
+        res.json(updateChat.history);
+      } else {
+        res.status(409);
+        res.json({ message: "Can't send the message" });
+      }
     } else {
       res.status(409);
-      res.json({ message: "Can't send the message" });
+      res.json({ message: "Can't create the message" });
     }
+
   } catch (error) {
     next(error);
   }
