@@ -79,19 +79,28 @@ router.post('/send-message', async (req, res, next) => {
   const { _id } = req.session.currentUser;
 
   try {
+    let time = new Date();
+    const dd = String(time.getDate()).padStart(2, '0');
+    const mm = String(time.getMonth() + 1).padStart(2, '0');
+    let hours = String(time.getHours());
+    let minutes = String(time.getMinutes());
+
+    if (minutes < 10) {
+      minutes = `0${minutes}`;
+    } else if (hours < 10) {
+      hours = `0${hours}`;
+    }
+
+    time = `${hours}:${minutes} - ${dd}/${mm}`;
+
     const newMessage = {
       text: message,
-      user: _id
+      user: _id,
+      date: time
     };
 
-    let today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-
-    today = mm + '/' + dd;
-
     const createdMessage = await Message.create(newMessage);
-    console.log(createdMessage);
+
     if (createdMessage) {
       const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: createdMessage._id } }, { new: true }).populate('history');
       if (updateChat) {
