@@ -54,12 +54,7 @@ router.get('/:id', async (req, res, next) => {
       username: contact.username
     };
 
-<<<<<<< HEAD
-    const chat = await Chat.findOne({ users: { $in: [id, user._id] } });
-
-=======
     const chat = await Chat.findOne({ users: { $in: [id, user._id] } }).populate('history');
->>>>>>> c6f7ef24456687d3c1d9b1474f0be8cbf58ab779
     const data = {
       _id: chat._id,
       contact: contactData,
