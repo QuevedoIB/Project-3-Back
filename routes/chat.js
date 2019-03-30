@@ -30,6 +30,7 @@ router.post('/create', async (req, res, next) => {
         contact: contactData,
         log: createdChat.history
       };
+      SocketManager.messageReceived(data._id);
       res.status(200);
       res.json(data);
     }
@@ -61,6 +62,7 @@ router.get('/:id', async (req, res, next) => {
       log: chat.history
     };
     if (chat) {
+      
       res.status(200);
       res.json(data);
     } else {
@@ -81,6 +83,7 @@ router.post('/send-message', async (req, res, next) => {
     const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: message } }, { new: true });
     console.log('UPDATE CHAT', updateChat);
     if (updateChat) {
+      SocketManager.messageReceived(updateChat._id);
       res.status(200);
       res.json(updateChat.history);
     } else {
