@@ -54,6 +54,7 @@ router.get('/:id', async (req, res, next) => {
     };
 
     const chat = await Chat.findOne({ users: { $in: [id, user._id] } });
+
     const data = {
       _id: chat._id,
       contact: contactData,
