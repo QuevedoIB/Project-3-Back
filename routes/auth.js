@@ -3,6 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const parser = require('../helpers/file-upload');
 const User = require('../models/user');
+const { getGoogleAccountFromCode, urlGoogle } = require('../helpers/google-signup');
+require('dotenv').config();
 
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
 
@@ -88,6 +90,51 @@ router.get('/private', isLoggedIn(), (req, res, next) => {
   res.status(200).json({
     message: 'This is a private message'
   });
+});
+
+router.get('/google-signup-url', async (req, res, next) => {
+  const url = await urlGoogle();
+
+  // 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fplus.me%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&response_type=code&client_id=&redirect_uri=';
+
+  // await url.url.replace('client_id=', `client_id=${process.env.clientID}`);
+  // await url.url.replace('redirect_uri=', `redirect_uri=${process.env.callbackURL}`);
+
+  console.log(typeof url);
+
+  res.status(200).json({
+    url
+  });
+});
+
+router.get('/google-credentials', async (req, res, next) => {
+  const { code } = req.query;
+  const userData = await getGoogleAccountFromCode(code);
+
+  console.log(userData);
+
+  try {
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(userData.id, salt);
+    const newUser = {
+      username: userData.email,
+      name: userData.email,
+      password: hashedPassword,
+      email: userData.email,
+      googleUser: true
+    };
+    const user = await User.find({ $and: [{ username: userData.email }, { email: userData.email }] });
+
+    if (user.length) {
+      req.session.currentUser = user[0];
+    } else {
+      const createdUser = await User.create(newUser);
+      req.session.currentUser = createdUser;
+    }
+    return res.redirect('/profile');
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
