@@ -11,12 +11,10 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
 
   const { currentUser } = req.session;
 
-  console.log(currentUser);
-
   try {
     if (username !== currentUser.username) {
       const userExists = await User.findOne({ username });
-      console.log('HOLA');
+
       if (userExists) {
         const err = new Error('Unprocessable Entity');
         err.status = 422;
@@ -40,7 +38,6 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
 
       return res.status(200).json(editedUser);
     } else {
-      console.log('ADIOS');
       const err = new Error('Unprocessable Entity');
       err.status = 422;
       err.statusMessage = 'Incorrect password';

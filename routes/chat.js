@@ -4,7 +4,7 @@ const Chat = require('../models/chat');
 const Message = require('../models/message');
 const User = require('../models/user');
 
-const SocketManager = require("../SocketManager");
+const SocketManager = require('../SocketManager');
 
 router.post('/create', async (req, res, next) => {
   const { contactId } = req.body;
@@ -31,7 +31,7 @@ router.post('/create', async (req, res, next) => {
         contact: contactData,
         log: createdChat.history
       };
-      SocketManager.messageReceived(data._id);
+      SocketManager.messageReceived(createdChat._id);
       res.status(200);
       res.json(data);
     }
@@ -45,8 +45,6 @@ router.post('/create', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
   const user = req.session.currentUser;
-
-  console.log(id);
 
   try {
     const contact = await User.findById(id);
@@ -63,7 +61,6 @@ router.get('/:id', async (req, res, next) => {
       log: chat.history
     };
     if (chat) {
-
       res.status(200);
       res.json(data);
     } else {

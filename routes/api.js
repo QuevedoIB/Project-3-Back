@@ -33,8 +33,6 @@ router.post('/send-match', isLoggedIn(), async (req, res, next) => {
   try {
     const userToMatch = await User.findById(userToMatchId);
 
-    console.log(userToMatch);
-
     if (!userToMatch.matches.includes(currentUser._id) && !currentUser.pending.includes(userToMatchId)) {
       const pending = [userToMatchId, ...currentUser.pending];
       const matches = [currentUser._id, ...userToMatch.matches];

@@ -1,26 +1,26 @@
 class SocketManager {
-  constructor(){
+  constructor () {
   }
-  initIO(io){
-    this.io=io;
+  initIO (io) {
+    this.io = io;
   }
 
-  messageReceived(chatId){
+  messageReceived (chatId) {
     this.connectToNamespace(chatId);
-    this.socket.emit("NEW_MESSAGE");
+    this.socket.emit('NEW_MESSAGE');
     console.log('EMITTED MESSAGE');
   }
- 
-  connectToNamespace (nsp){
-    
-    this.socket = this.io.of('/'+nsp);
+
+  connectToNamespace (nsp) {
+
+    this.socket = this.io.of('/' + nsp);
     this.socket.on('connection', (sk) => {
       console.log('user connected')
     });
-    return;
+    
   }
 
-  socketConnected(socket){
+  socketConnected (socket) {
     this.socket = socket;
   }
 }
