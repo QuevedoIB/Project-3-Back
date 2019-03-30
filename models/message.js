@@ -7,15 +7,15 @@ const ObjectId = Schema.Types.ObjectId;
 const messageSchema = new Schema({
   text: {
     type: String,
-    required: true,
+    required: true
   },
   user: {
     type: ObjectId,
     ref: 'User',
-    required: true,
+    required: true
   },
   date: {
-    type: Date,
+    type: String
   }
 });
 
