@@ -78,7 +78,7 @@ router.post('/send-message', async (req, res, next) => {
 
   try {
     const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: message } }, { new: true });
-
+    console.log('AAAAAH', updateChat);
     if (updateChat) {
       SocketManager.messageReceived(updateChat._id);
       res.status(200);
