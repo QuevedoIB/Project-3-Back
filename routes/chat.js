@@ -78,8 +78,8 @@ router.post('/send-message', async (req, res, next) => {
   const { id, message } = req.body;
 
   try {
-    const updateChat = await Chat.findByIdAndUpdate(id, { history: { $push: message } }, { new: true });
-
+    const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: message } }, { new: true });
+    console.log('UPDATE CHAT', updateChat);
     if (updateChat) {
       res.status(200);
       res.json(updateChat.history);
