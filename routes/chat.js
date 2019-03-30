@@ -3,6 +3,8 @@ const router = express.Router();
 const Chat = require('../models/chat');
 const User = require('../models/user');
 
+const SocketManager = require("../SocketManager");
+
 router.post('/create', async (req, res, next) => {
   const { contactId } = req.body;
   const { _id } = req.session.currentUser;

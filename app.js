@@ -9,7 +9,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
 
-const socket = require('socket.io');
+// const socket = require('socket.io');
 const server = require('./bin/www');
 
 require('dotenv').config();
@@ -30,30 +30,13 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 const app = express();
-
-
-// io = socket(server);
-
-
-// io.on('connection', (socket) => {
-//   console.log(socket.id);
-
-//   socket.on('SEND_MESSAGE', function(data){
-//       io.emit('RECEIVE_MESSAGE', data);
-//   })
-// });
+const io = require('socket.io').listen(server);
 
 app.use(cors({
   credentials: true,
   origin: [process.env.PUBLIC_DOMAIN]
 }));
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,OPTIONS,DELETE');
-//   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   res.setHeader('Access-Control-Allow-Credentials', true);
-//   next();
-// });
+
 
 app.use(session({
   store: new MongoStore({
