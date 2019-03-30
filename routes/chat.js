@@ -54,12 +54,7 @@ router.get('/:id', async (req, res, next) => {
       username: contact.username
     };
 
-<<<<<<< HEAD
-    const chat = await Chat.findOne({ users: { $in: [id, user._id] } });
-
-=======
     const chat = await Chat.findOne({ users: { $in: [id, user._id] } }).populate('history');
->>>>>>> c6f7ef24456687d3c1d9b1474f0be8cbf58ab779
     const data = {
       _id: chat._id,
       contact: contactData,
@@ -82,15 +77,23 @@ router.get('/:id', async (req, res, next) => {
 router.post('/send-message', async (req, res, next) => {
   const { id, message } = req.body;
   const { _id } = req.session.currentUser;
+
   try {
     const newMessage = {
       text: message,
-      user: _id,
-      date: Date.now
-    }
+      user: _id
+    };
+
+    let today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+
+    today = mm + '/' + dd;
+
     const createdMessage = await Message.create(newMessage);
+    console.log(createdMessage);
     if (createdMessage) {
-      const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: createdMessage } }, { new: true });
+      const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: createdMessage._id } }, { new: true }).populate('history');
       if (updateChat) {
         SocketManager.messageReceived(updateChat._id);
         res.status(200);
@@ -103,7 +106,6 @@ router.post('/send-message', async (req, res, next) => {
       res.status(409);
       res.json({ message: "Can't create the message" });
     }
-
   } catch (error) {
     next(error);
   }
