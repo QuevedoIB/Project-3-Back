@@ -45,8 +45,6 @@ router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
   const user = req.session.currentUser;
 
-  console.log(id);
-
   try {
     const contact = await User.findById(id);
     const contactData = {
@@ -80,7 +78,7 @@ router.post('/send-message', async (req, res, next) => {
 
   try {
     const updateChat = await Chat.findByIdAndUpdate(id, { $push: { history: message } }, { new: true });
-    console.log('UPDATE CHAT', updateChat);
+
     if (updateChat) {
       SocketManager.messageReceived(updateChat._id);
       res.status(200);
