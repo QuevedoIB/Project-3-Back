@@ -39,7 +39,7 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
     .catch(next);
 });
 
-router.post('/signup', isNotLoggedIn(), validationLoggin(), parser.single('imageUrl'), (req, res, next) => {
+router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
   const { username, email, password, imageUrl, quote, interests, personality, location } = req.body;
 
   User.findOne({
@@ -55,10 +55,9 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), parser.single('image
         const salt = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
 
-        if (req.file) {
-          imageUrl = req.file.url;
-        }
-        console.log('USER IMAGE ', imageUrl, req.file.url);
+        // if (req.file) {
+        //   imageUrl = req.file.url;
+        // }
         const newUser = new User({
           username,
           email,
