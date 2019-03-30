@@ -49,30 +49,31 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
         err.status = 422;
         err.statusMessage = 'username-not-unique';
         next(err);
+      } else {
+        const salt = bcrypt.genSaltSync(10);
+        const hashPass = bcrypt.hashSync(password, salt);
+
+        // if (req.file) {
+        //   imageUrl = req.file.url;
+        // }
+        const newUser = new User({
+          username,
+          email,
+          password: hashPass,
+          imageUrl,
+          quote,
+          interests,
+          personality,
+          location
+        });
+
+        return newUser.save().then(() => {
+          // delete password missing
+          req.session.currentUser = newUser;
+
+          res.status(200).json(newUser);
+        });
       }
-
-      const salt = bcrypt.genSaltSync(10);
-      const hashPass = bcrypt.hashSync(password, salt);
-
-      const newUser = new User({
-        username,
-        email,
-        password: hashPass,
-        imageUrl: parser.single(imageUrl),
-        quote,
-        interests,
-        personality,
-        location
-      });
-
-      
-
-      return newUser.save().then(() => {
-        // delete password missing
-        req.session.currentUser = newUser;
-
-        res.status(200).json(newUser);
-      });
     })
     .catch(next);
 });
