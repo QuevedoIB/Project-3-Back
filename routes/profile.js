@@ -153,6 +153,7 @@ router.get('/contact/:contactId', isLoggedIn(), async (req, res, next) => {
       const dataContacts = {
         _id: contact._id,
         username: contact.username,
+        imageUrl: contact.imageUrl,
         quote: contact.quote,
         interests: contact.interests
       };
