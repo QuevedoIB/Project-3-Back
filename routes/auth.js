@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const parser = require('../helpers/file-upload');
 const User = require('../models/user');
 const { getGoogleAccountFromCode, urlGoogle } = require('../helpers/google-signup');
 require('dotenv').config();
@@ -96,7 +95,6 @@ router.post('/complete-profile', isLoggedIn(), async (req, res, next) => {
 });
 
 router.post('/logout', isLoggedIn(), (req, res, next) => {
-  res.redirect('http://localhost:3000');
   req.session.destroy();
   return res.status(204).send();
 });
