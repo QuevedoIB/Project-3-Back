@@ -80,7 +80,23 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
     .catch(next);
 });
 
+router.post('/complete-profile', isLoggedIn(), async (req, res, next) => {
+  const { quote, interests, personality, location } = req.body;
+
+  const { _id } = req.session.currentUser;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(_id, { location, interests, quote, personality }, { new: true });
+
+    req.session.currentUser = updatedUser;
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/logout', isLoggedIn(), (req, res, next) => {
+  res.redirect('http://localhost:3000');
   req.session.destroy();
   return res.status(204).send();
 });
@@ -99,8 +115,6 @@ router.get('/google-signup-url', async (req, res, next) => {
   // await url.url.replace('client_id=', `client_id=${process.env.clientID}`);
   // await url.url.replace('redirect_uri=', `redirect_uri=${process.env.callbackURL}`);
 
-  console.log(typeof url);
-
   res.status(200).json({
     url
   });
@@ -110,27 +124,27 @@ router.get('/google-credentials', async (req, res, next) => {
   const { code } = req.query;
   const userData = await getGoogleAccountFromCode(code);
 
-  console.log(userData);
-
   try {
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(userData.id, salt);
-    const newUser = {
-      username: userData.email,
-      name: userData.email,
-      password: hashedPassword,
-      email: userData.email,
-      googleUser: true
-    };
     const user = await User.find({ $and: [{ username: userData.email }, { email: userData.email }] });
 
     if (user.length) {
       req.session.currentUser = user[0];
+      req.status(200).json(user);
     } else {
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(userData.id, salt);
+      const newUser = {
+        username: userData.email,
+        name: userData.email,
+        password: hashedPassword,
+        email: userData.email,
+        googleUser: true
+      };
       const createdUser = await User.create(newUser);
       req.session.currentUser = createdUser;
+      req.status(200).json(createdUser);
     }
-    return res.redirect('/profile');
+    return res.redirect('http://localhost:3000/');
   } catch (err) {
     next(err);
   }

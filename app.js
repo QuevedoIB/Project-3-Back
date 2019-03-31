@@ -37,7 +37,6 @@ app.use(cors({
   origin: [process.env.PUBLIC_DOMAIN]
 }));
 
-
 app.use(session({
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
