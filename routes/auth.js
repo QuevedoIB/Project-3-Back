@@ -61,7 +61,6 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
           username,
           email,
           password: hashPass,
-          imageUrl,
           quote,
           interests,
           personality,
