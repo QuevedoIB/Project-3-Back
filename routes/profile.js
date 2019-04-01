@@ -191,12 +191,14 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
     const deletedContactUser = await User.findByIdAndUpdate(_id, { $pull: { contacts: contactId } }, { new: true });
     const deletedUserContact = await User.findByIdAndUpdate(contactId, { $pull: { contacts: _id } }, { new: true });
 
-    const userToReport = await User.findById(contactId);
+    const userToReport = await User.findById(contactId).lean();
 
-    const validateUser = userToReport.reports.filter(e => e.reporter.equals(_id));
+    const validateUser = userToReport.reports.filter(e => e._id.equals(_id));
 
     if (validateUser.length === 0) {
       const userReported = await User.findByIdAndUpdate(contactId, { $push: { reports: { _id } } }, { new: true });
+
+      console.log(userReported);
 
       if (userReported.reports.length > 15) {
         await User.findByIdAndDelete(contactId);
