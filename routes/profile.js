@@ -170,7 +170,7 @@ router.post('/contact/delete', isLoggedIn(), async (req, res, next) => {
   try {
     if (userId === _id) {
       const user = await User.findById(_id);
-      const userWithoutContact = await User.findByIdAndUpdate(userId, { $pull: { contacts: contactId } });
+      const userWithoutContact = await User.findByIdAndUpdate(userId, { $pull: { contacts: contactId } }, { new: true });
       await User.findByIdAndUpdate(contactId, { $pull: { contacts: userId } });
       res.status(200).json(userWithoutContact);
     } else {
@@ -179,6 +179,32 @@ router.post('/contact/delete', isLoggedIn(), async (req, res, next) => {
       err.statusMessage = 'Unauthorized';
       next(err);
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/report', isLoggedIn(), async (req, res, next) => {
+  const { contactId } = req.body;
+  const { _id } = req.session.currentUser;
+  try {
+    const deletedContactUser = await User.findByIdAndUpdate(_id, { $pull: { contacts: contactId } }, { new: true });
+    const deletedUserContact = await User.findByIdAndUpdate(contactId, { $pull: { contacts: _id } }, { new: true });
+
+    const userToReport = await User.findById(contactId);
+
+    const validateUser = userToReport.reports.filter(e => e.reporter.equals(_id));
+
+    if (validateUser.length === 0) {
+      const userReported = await User.findByIdAndUpdate(contactId, { $push: { reports: { _id } } }, { new: true });
+
+      if (userReported.reports.length > 15) {
+        await User.findByIdAndDelete(contactId);
+      }
+    }
+
+    req.session.currentUser = deletedContactUser;
+    res.status(200).json(deletedContactUser);
   } catch (error) {
     next(error);
   }

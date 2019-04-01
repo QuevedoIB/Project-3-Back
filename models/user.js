@@ -42,7 +42,19 @@ const userSchema = new Schema({
   pending: [{
     type: ObjectId,
     ref: 'User'
-  }]
+  }],
+  reports: [
+    {
+      reporter: {
+        type: ObjectId,
+        ref: 'User'
+      },
+      date: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ]
 });
 
 const User = mongoose.model('User', userSchema);

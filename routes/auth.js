@@ -69,6 +69,7 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, nex
         const publicData = {
           username,
           email,
+          imageUrl: createdUser.imageUrl,
           interests: [],
           quote: '',
           location: [],
