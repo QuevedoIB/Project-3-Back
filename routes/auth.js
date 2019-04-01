@@ -38,18 +38,21 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
     .catch(next);
 });
 
-router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
-  const { username, email, password, imageUrl, quote, interests, personality, location } = req.body;
+router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
+  const { username, email, password, imageUrl } = req.body;
 
-  User.findOne({
-    username
-  }, 'username')
-    .then((userExists) => {
-      if (userExists) {
-        const err = new Error('Unprocessable Entity');
-        err.status = 422;
-        err.statusMessage = 'username-not-unique';
-        next(err);
+  console.log(username, email, password);
+
+  try {
+    const userByUsername = await User.findOne({ username });
+
+    if (userByUsername) {
+      return res.status(409).json({ message: 'Username taken' });
+    } else {
+      const userByEmail = await User.findOne({ email });
+
+      if (userByEmail) {
+        res.status(409).json({ message: 'Email already in use' });
       } else {
         const salt = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
@@ -57,25 +60,68 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), (req, res, next) => 
         // if (req.file) {
         //   imageUrl = req.file.url;
         // }
-        const newUser = new User({
+        const newUser = {
           username,
           email,
-          password: hashPass,
-          quote,
-          interests,
-          personality,
-          location
-        });
+          password: hashPass
+        };
 
-        return newUser.save().then(() => {
-          // delete password missing
-          req.session.currentUser = newUser;
+        console.log(newUser);
 
-          res.status(200).json(newUser);
-        });
+        const createdUser = await User.create(newUser);
+
+        const publicData = {
+          username,
+          email,
+          interests: [],
+          quote: '',
+          location: [],
+          personality: [],
+          matches: [],
+          contacts: []
+        };
+
+        req.session.currentUser = createdUser;
+
+        res.status(200).json(publicData);
       }
-    })
-    .catch(next);
+    }
+  } catch (error) {
+    next(error);
+  }
+
+  // User.findOne({
+  //   username
+  // }, 'username')
+  //   .then((userExists) => {
+  //     if (userExists) {
+  //       return res.status(422).json({ message: 'User already exists' });
+  //     } else {
+  //       const salt = bcrypt.genSaltSync(10);
+  //       const hashPass = bcrypt.hashSync(password, salt);
+
+  //       // if (req.file) {
+  //       //   imageUrl = req.file.url;
+  //       // }
+  //       const newUser = new User({
+  //         username,
+  //         email,
+  //         password: hashPass,
+  //         quote,
+  //         interests,
+  //         personality,
+  //         location
+  //       });
+
+  //       return newUser.save().then(() => {
+  //         // delete password missing
+  //         req.session.currentUser = newUser;
+
+  //         res.status(200).json(newUser);
+  //       });
+  //     }
+  //   })
+  //   .catch(error => next(error));
 });
 
 router.post('/complete-profile', isLoggedIn(), async (req, res, next) => {
@@ -126,7 +172,6 @@ router.get('/google-credentials', async (req, res, next) => {
 
     if (user.length) {
       req.session.currentUser = user[0];
-      req.status(200).json(user);
     } else {
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(userData.id, salt);
@@ -139,7 +184,6 @@ router.get('/google-credentials', async (req, res, next) => {
       };
       const createdUser = await User.create(newUser);
       req.session.currentUser = createdUser;
-      req.status(200).json(createdUser);
     }
     return res.redirect('http://localhost:3000/');
   } catch (err) {
