@@ -16,10 +16,7 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
       const userExists = await User.findOne({ username });
 
       if (userExists) {
-        const err = new Error('Unprocessable Entity');
-        err.status = 422;
-        err.statusMessage = 'User already exists';
-        next(err);
+        return res.status(409).json({ message: 'Username taken' });
       }
     }
 

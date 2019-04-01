@@ -153,11 +153,6 @@ router.get('/private', isLoggedIn(), (req, res, next) => {
 router.get('/google-signup-url', async (req, res, next) => {
   const url = await urlGoogle();
 
-  // 'https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fplus.me%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&response_type=code&client_id=&redirect_uri=';
-
-  // await url.url.replace('client_id=', `client_id=${process.env.clientID}`);
-  // await url.url.replace('redirect_uri=', `redirect_uri=${process.env.callbackURL}`);
-
   res.status(200).json({
     url
   });
