@@ -122,12 +122,17 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, nex
 });
 
 router.post('/complete-profile', isLoggedIn(), async (req, res, next) => {
-  const { quote, interests, personality, location } = req.body;
+  const { quote, interests, personality, location, locationText } = req.body;
 
   const { _id } = req.session.currentUser;
 
+  const locationData = {
+    coords: location,
+    name: locationText
+  };
+
   try {
-    const updatedUser = await User.findByIdAndUpdate(_id, { location, interests, quote, personality }, { new: true });
+    const updatedUser = await User.findByIdAndUpdate(_id, { location: locationData, interests, quote, personality }, { new: true });
 
     req.session.currentUser = updatedUser;
     res.status(200).json(updatedUser);

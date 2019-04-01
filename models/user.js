@@ -30,7 +30,10 @@ const userSchema = new Schema({
   personality: {
     type: Array
   },
-  location: Array,
+  location: {
+    coords: Array,
+    name: String
+  },
   matches: [{
     type: ObjectId,
     ref: 'User'
