@@ -41,8 +41,6 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
 router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
   const { username, email, password, imageUrl } = req.body;
 
-  console.log(username, email, password);
-
   try {
     const userByUsername = await User.findOne({ username });
 
@@ -65,8 +63,6 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, nex
           email,
           password: hashPass
         };
-
-        console.log(newUser);
 
         const createdUser = await User.create(newUser);
 
