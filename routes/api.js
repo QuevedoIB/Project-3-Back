@@ -10,7 +10,7 @@ router.get('/users', async (req, res, next) => {
   const currentUserId = req.session.currentUser._id;
 
   try {
-    const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { matches: { $nin: [currentUserId] } }, { pending: { $nin: [currentUserId] } }, { contacts: { $nin: [currentUserId] } }] });
+    const allUsers = await User.find({ $and: [{ _id: { $ne: currentUserId } }, { personality: { $not: { $size: 0 } } }, { matches: { $nin: [currentUserId] } }, { pending: { $nin: [currentUserId] } }, { contacts: { $nin: [currentUserId] } }] });
 
     let usersArr = allUsers.map(e => {
       e.email = '';
