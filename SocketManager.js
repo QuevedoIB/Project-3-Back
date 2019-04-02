@@ -10,6 +10,11 @@ class SocketManager {
     this.socket.emit('NEW_MESSAGE');
   }
 
+  enableImagesRequest (chatId) {
+    this.connectToNamespace(chatId);
+    this.socket.emit('ENABLE-IMAGES-REQUEST');
+  }
+
   connectToNamespace (nsp) {
     this.socket = this.io.of('/' + nsp);
     this.socket.on('connection', (sk) => {
