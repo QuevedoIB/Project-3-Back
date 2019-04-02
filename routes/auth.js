@@ -34,7 +34,7 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
 });
 
 router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
-  const { username, email, password, imageUrl } = req.body;
+  const { username, email, password } = req.body;
 
   try {
     const userByUsername = await User.findOne({ username });
