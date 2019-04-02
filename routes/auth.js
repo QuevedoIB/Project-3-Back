@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const getUsernameFromMail = require('../helpers/get-email-username');
 const { getGoogleAccountFromCode, urlGoogle } = require('../helpers/google-signup');
-const profileImagesArr = ('../data/profile-images');
+const profileImagesArr = require('../data/profile-images');
 require('dotenv').config();
 
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
