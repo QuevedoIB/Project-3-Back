@@ -59,7 +59,8 @@ router.get('/:id', async (req, res, next) => {
       _id: chat._id,
       contact: contactData,
       log: chat.history,
-      enabledImagesRequest: chat.enabledImagesRequest
+      enabledImagesRequest: chat.enabledImagesRequest,
+      enabledImages: chat.enabledImages
     };
     if (chat) {
       res.status(200);
@@ -141,6 +142,67 @@ router.post('/enable-images-request', async (req, res, next) => {
       SocketManager.enableImagesRequest(enableImagesChat._id);
       res.status(200);
       res.json(enableImagesChat.enabledImagesRequest);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/accept-request', async (req, res, next) => {
+  const { id } = req.body;
+  const { _id } = req.session.currentUser;
+
+  console.log(id, _id);
+
+  try {
+    const chat = await Chat.findById(id);
+
+    const newRequests = chat.enabledImagesRequest.filter(e => !e.equals(_id));
+
+    // const updatedChat = await Chat.findByIdAndUpdate(id, { $pull: { enabledImagesRequest: _id } }, { $set: { enabledImages: true } }, { new: true });
+    const updatedChat = await Chat.findByIdAndUpdate(id, { $set: { enabledImages: true, enabledImagesRequest: newRequests } }, { new: true });
+
+    if (updatedChat) {
+      SocketManager.enableImagesRequest(updatedChat._id);
+      res.status(200);
+      res.json(updatedChat);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/decline-request', async (req, res, next) => {
+  const { id } = req.body;
+  const { _id } = req.session.currentUser;
+
+  try {
+    const chat = await Chat.findById(id);
+
+    const newRequests = chat.enabledImagesRequest.filter(e => !e.equals(_id));
+
+    // const updatedChat = await Chat.findByIdAndUpdate(id, { $pull: { enabledImagesRequest: _id } }, { $set: { enabledImages: false } }, { new: true });
+    const updatedChat = await Chat.findByIdAndUpdate(id, { $set: { enabledImages: false, enabledImagesRequest: newRequests } }, { new: true });
+    if (updatedChat) {
+      SocketManager.enableImagesRequest(updatedChat._id);
+      res.status(200);
+      res.json(updatedChat);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/disable-images-request', async (req, res, next) => {
+  const { id } = req.body;
+
+  try {
+    const disabledImagesChat = await Chat.findByIdAndUpdate(id, { $set: { enabledImagesRequest: [], enabledImages: false } }, { new: true });
+
+    if (disabledImagesChat) {
+      SocketManager.enableImagesRequest(disabledImagesChat._id);
+      res.status(200);
+      res.json(disabledImagesChat.enabledImagesRequest);
     }
   } catch (error) {
     next(error);
