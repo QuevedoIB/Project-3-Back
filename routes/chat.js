@@ -58,7 +58,8 @@ router.get('/:id', async (req, res, next) => {
     const data = {
       _id: chat._id,
       contact: contactData,
-      log: chat.history
+      log: chat.history,
+      enabledImagesRequest: chat.enabledImagesRequest
     };
     if (chat) {
       res.status(200);
@@ -114,6 +115,32 @@ router.post('/send-message', async (req, res, next) => {
     } else {
       res.status(409);
       res.json({ message: "Can't create the message" });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/enable-images-request', async (req, res, next) => {
+  const { id, contactId } = req.body;
+
+  try {
+    const chat = await Chat.findById(id);
+
+    const checker = chat.enabledImagesRequest.some(e => e.equals(contactId));
+
+    let enableImagesChat;
+
+    if (checker) {
+      enableImagesChat = await Chat.findByIdAndUpdate(id, { $pull: { enabledImagesRequest: contactId } }, { new: true });
+    } else {
+      enableImagesChat = await Chat.findByIdAndUpdate(id, { $push: { enabledImagesRequest: contactId } }, { new: true });
+    }
+
+    if (enableImagesChat) {
+      SocketManager.enableImagesRequest(enableImagesChat._id);
+      res.status(200);
+      res.json(enableImagesChat.enabledImagesRequest);
     }
   } catch (error) {
     next(error);

@@ -49,21 +49,20 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
 });
 
 router.post('/change-image', isLoggedIn(), async (req, res, next) => {
-  const {image} = req.body;
+  const { image } = req.body;
 
   const currentUserId = req.session.currentUser._id;
 
-  try{
-    const userUpdated = await User.findByIdAndUpdate(currentUserId, {imageUrl : image});
-    if(userUpdated){
+  try {
+    const userUpdated = await User.findByIdAndUpdate(currentUserId, { imageUrl: image });
+    if (userUpdated) {
       res.status(200).json(userUpdated);
-    }else{
+    } else {
       res.status(409).json({ message: 'Cannot update the image' });
     }
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-
 });
 
 router.post('/add-contact/:userToAddId', isLoggedIn(), async (req, res, next) => {

@@ -12,7 +12,7 @@ class SocketManager {
 
   enableImagesRequest (chatId) {
     this.connectToNamespace(chatId);
-    this.socket.emit('ENABLE-IMAGES-REQUEST');
+    this.socket.emit('ENABLE-IMAGES');
   }
 
   connectToNamespace (nsp) {

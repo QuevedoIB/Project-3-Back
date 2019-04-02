@@ -17,7 +17,11 @@ const chatSchema = new Schema({
   enabledImages: {
     type: Boolean,
     default: false
-  }
+  },
+  enabledImagesRequest: [{
+    type: ObjectId,
+    ref: 'User'
+  }]
 });
 
 const Chat = mongoose.model('Chat', chatSchema);

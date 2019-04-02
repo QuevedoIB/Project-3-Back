@@ -159,13 +159,14 @@ router.get('/google-credentials', async (req, res, next) => {
   const { code } = req.query;
   const userData = await getGoogleAccountFromCode(code);
 
+  const username = getUsernameFromMail(userData.email);
+
   try {
-    const user = await User.find({ $and: [{ username: userData.email }, { email: userData.email }] });
+    const user = await User.find({ $and: [{ username: username }, { email: userData.email }] });
 
     if (user.length) {
       req.session.currentUser = user[0];
     } else {
-      const username = getUsernameFromMail(userData.email);
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(userData.id, salt);
       const newUser = {
