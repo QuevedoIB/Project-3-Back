@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const getUsernameFromMail = require('../helpers/get-email-username');
 const { getGoogleAccountFromCode, urlGoogle } = require('../helpers/google-signup');
 require('dotenv').config();
 
@@ -170,10 +171,11 @@ router.get('/google-credentials', async (req, res, next) => {
     if (user.length) {
       req.session.currentUser = user[0];
     } else {
+      const username = getUsernameFromMail(userData.email);
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(userData.id, salt);
       const newUser = {
-        username: userData.email,
+        username,
         name: userData.email,
         password: hashedPassword,
         email: userData.email,

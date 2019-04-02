@@ -7,7 +7,7 @@ const User = require('../models/user');
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
 
 router.post('/edit', isLoggedIn(), async (req, res, next) => {
-  const { username, password, quote, interests, currentPassword } = req.body;
+  const { username, password, quote, interests, currentPassword, locationCoords, locationText } = req.body;
 
   const { currentUser } = req.session;
 
@@ -22,11 +22,17 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
 
     if (bcrypt.compareSync(currentPassword, currentUser.password)) {
       let editedUser;
-      if (password) {
+
+      if (locationText && locationCoords.length > 0 && password) {
         const salt = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
-
+        editedUser = await User.findOneAndUpdate({ username: currentUser.username }, { $set: { username, password: hashPass, quote, interests, location: { name: locationText, coords: locationCoords } } }, { new: true });
+      } else if (password) {
+        const salt = bcrypt.genSaltSync(10);
+        const hashPass = bcrypt.hashSync(password, salt);
         editedUser = await User.findOneAndUpdate({ username: currentUser.username }, { $set: { username, password: hashPass, quote, interests } }, { new: true });
+      } else if (locationText && locationCoords.length > 0) {
+        editedUser = await User.findOneAndUpdate({ username: currentUser.username }, { $set: { username, quote, interests, location: { name: locationText, coords: locationCoords } } }, { new: true });
       } else {
         editedUser = await User.findOneAndUpdate({ username: currentUser.username }, { $set: { username, quote, interests } }, { new: true });
       }
@@ -152,7 +158,8 @@ router.get('/contact/:contactId', isLoggedIn(), async (req, res, next) => {
         username: contact.username,
         imageUrl: contact.imageUrl,
         quote: contact.quote,
-        interests: contact.interests
+        interests: contact.interests,
+        contacts: contact.contacts
       };
       res.status(200);
       res.json(dataContacts);

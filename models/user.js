@@ -57,7 +57,11 @@ const userSchema = new Schema({
         default: Date.now
       }
     }
-  ]
+  ],
+  googleUser: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const User = mongoose.model('User', userSchema);
