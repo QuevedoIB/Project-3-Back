@@ -41,10 +41,7 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
 
       return res.status(200).json(editedUser);
     } else {
-      const err = new Error('Unprocessable Entity');
-      err.status = 422;
-      err.statusMessage = 'Incorrect password';
-      next(err);
+      res.status(422).json({ message: 'Incorrect password' });
     }
   } catch (err) {
     next(err);

@@ -20,20 +20,14 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        const err = new Error('Not Found');
-        err.status = 404;
-        err.statusMessage = 'Not Found';
-        next(err);
+        res.status(404).json({ message: 'Incorrect User' });
       }
       if (bcrypt.compareSync(password, user.password)) {
         delete user.password;
         req.session.currentUser = user;
         return res.status(200).json(user);
       } else {
-        const err = new Error('Unauthorized');
-        err.status = 401;
-        err.statusMessage = 'Unauthorized';
-        next(err);
+        res.status(401).json({ message: 'Incorrect User' });
       }
     })
     .catch(next);
