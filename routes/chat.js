@@ -48,7 +48,9 @@ router.get('/:id', async (req, res, next) => {
 
   try {
     const contact = await User.findById(id);
-    const chat = await Chat.findOne({ users: { $in: [id, user._id] } }).populate('history');
+
+    const chat = await Chat.findOne({ $and: [{ users: { $in: [id] } }, { users: { $in: [user._id] } }] }).populate('history');
+
     const contactData = {
       _id: contact._id,
       imageUrl: contact.imageUrl,
@@ -56,7 +58,7 @@ router.get('/:id', async (req, res, next) => {
       username: contact.username
     };
 
-    if(chat.enabledImages){
+    if (chat.enabledImages) {
       contactData.personalImage = contact.personalImage;
     }
 
@@ -153,6 +155,22 @@ router.post('/enable-images-request', async (req, res, next) => {
     next(error);
   }
 });
+
+router.post('/on-typing', async (req, res, next) => {
+  const { chatId, userTypingId } = req.body;
+
+  await SocketManager.onTyping(chatId, userTypingId);
+  // SocketManager.onTyping(chatId);
+  res.status(200);
+});
+
+// router.post('/on-typing-stop', async (req, res, next) => {
+//   const { chatId } = req.body;
+//   console.log('STOPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP');
+//   SocketManager.onStopTyping(chatId);
+//   // SocketManager.onTyping(chatId);
+//   res.status(200);
+// });
 
 router.post('/accept-request', async (req, res, next) => {
   const { id } = req.body;
