@@ -50,7 +50,7 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, nex
       } else {
         const salt = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
-        const randomNumber = Math.floor(Math.random()*profileImagesArr.length);
+        const randomNumber = Math.floor(Math.random() * profileImagesArr.length);
         // if (req.file) {
         //   imageUrl = req.file.url;
         // }
@@ -165,10 +165,12 @@ router.get('/google-credentials', async (req, res, next) => {
   const username = getUsernameFromMail(userData.email);
 
   try {
-    const user = await User.find({ $and: [{ username: username }, { email: userData.email }] });
+    const user = await User.find({ email: userData.email });
 
     if (user.length) {
-      req.session.currentUser = user[0];
+      if (bcrypt.compareSync(userData.id, user[0].password)) {
+        req.session.currentUser = user[0];
+      }
     } else {
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(userData.id, salt);
