@@ -63,6 +63,7 @@ router.post('/change-image', isLoggedIn(), async (req, res, next) => {
   try {
     const userUpdated = await User.findByIdAndUpdate(currentUserId, { personalImage: image });
     if (userUpdated) {
+      req.session.currentUser = userUpdated;
       res.status(200).json(userUpdated);
     } else {
       res.status(409).json({ message: 'Cannot update the image' });
