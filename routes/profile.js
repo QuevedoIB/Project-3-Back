@@ -20,9 +20,16 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
       }
     }
 
-    if (bcrypt.compareSync(currentPassword, currentUser.password)) {
-      let editedUser;
+    let editedUser;
 
+    if (currentUser.googleUser) {
+      editedUser = await User.findOneAndUpdate({ username: currentUser.username }, { $set: { username, quote, interests } }, { new: true });
+      req.session.currentUser = editedUser;
+
+      return res.status(200).json(editedUser);
+    }
+
+    if (bcrypt.compareSync(currentPassword, currentUser.password)) {
       if (locationText && locationCoords.length > 0 && password) {
         const salt = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
@@ -218,8 +225,6 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
 
     if (validateUser.length === 0) {
       const userReported = await User.findByIdAndUpdate(contactId, { $push: { reports: { _id } } }, { new: true });
-
-      console.log(userReported);
 
       if (userReported.reports.length > 15) {
         let transporter = emailTransporter();
