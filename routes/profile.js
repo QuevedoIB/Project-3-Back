@@ -26,8 +26,6 @@ router.post('/edit', isLoggedIn(), async (req, res, next) => {
       editedUser = await User.findOneAndUpdate({ username: currentUser.username }, { $set: { username, quote, interests } }, { new: true });
       req.session.currentUser = editedUser;
 
-      console.log(editedUser);
-
       return res.status(200).json(editedUser);
     }
 
