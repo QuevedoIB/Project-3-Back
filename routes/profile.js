@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-
+const nodemailer = require('nodemailer');
 const User = require('../models/user');
 
 const { isLoggedIn, isNotLoggedIn, validationLoggin } = require('../helpers/middlewares');
@@ -222,6 +222,16 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
       console.log(userReported);
 
       if (userReported.reports.length > 15) {
+        let transporter = emailTransporter();
+        await transporter.sendMail({
+          from: '"Tinder Sorpresa" <amazoniano123@gmail.com>',
+          to: userReported.email, 
+          subject: 'Account ban', 
+          text: 'Your account has been banned after receiving too reports from other users. You can not log in anymore in our application.',
+          html: `<h3>Tinder Sorpresa Reporting System</h3><p>${text}</p>`
+        });
+
+
         await User.findByIdAndDelete(contactId);
       }
     }
@@ -232,5 +242,18 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
     next(error);
   }
 });
+
+
+function emailTransporter(){
+  let transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: 'amazoniano123@gmail.com',
+      pass: 'ninguna123'
+    }
+  });
+
+  return transporter;
+}
 
 module.exports = router;
