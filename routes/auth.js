@@ -84,39 +84,6 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, nex
   } catch (error) {
     next(error);
   }
-
-  // User.findOne({
-  //   username
-  // }, 'username')
-  //   .then((userExists) => {
-  //     if (userExists) {
-  //       return res.status(422).json({ message: 'User already exists' });
-  //     } else {
-  //       const salt = bcrypt.genSaltSync(10);
-  //       const hashPass = bcrypt.hashSync(password, salt);
-
-  //       // if (req.file) {
-  //       //   imageUrl = req.file.url;
-  //       // }
-  //       const newUser = new User({
-  //         username,
-  //         email,
-  //         password: hashPass,
-  //         quote,
-  //         interests,
-  //         personality,
-  //         location
-  //       });
-
-  //       return newUser.save().then(() => {
-  //         // delete password missing
-  //         req.session.currentUser = newUser;
-
-  //         res.status(200).json(newUser);
-  //       });
-  //     }
-  //   })
-  //   .catch(error => next(error));
 });
 
 router.post('/complete-profile', isLoggedIn(), async (req, res, next) => {

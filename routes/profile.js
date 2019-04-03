@@ -230,12 +230,11 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
         let transporter = emailTransporter();
         await transporter.sendMail({
           from: '"Tinder Sorpresa" <amazoniano123@gmail.com>',
-          to: userReported.email, 
-          subject: 'Account ban', 
+          to: userReported.email,
+          subject: 'Account ban',
           text: 'Your account has been banned after receiving too reports from other users. You can not log in anymore in our application.',
           html: `<h3>Tinder Sorpresa Reporting System</h3><p>${text}</p>`
         });
-
 
         await User.findByIdAndDelete(contactId);
       }
@@ -248,8 +247,7 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-
-function emailTransporter(){
+function emailTransporter () {
   let transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
