@@ -21,6 +21,10 @@ const userSchema = new Schema({
     type: String,
     default: 'https://www.caduceosalud.es/wp-content/uploads/2013/09/silueta.png'
   },
+  personalImage: {
+    type: String,
+    default: ''
+  },
   quote: {
     type: String
   },

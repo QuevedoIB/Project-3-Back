@@ -48,13 +48,18 @@ router.get('/:id', async (req, res, next) => {
 
   try {
     const contact = await User.findById(id);
+    const chat = await Chat.findOne({ users: { $in: [id, user._id] } }).populate('history');
     const contactData = {
       _id: contact._id,
       imageUrl: contact.imageUrl,
+      personalImage: '',
       username: contact.username
     };
 
-    const chat = await Chat.findOne({ users: { $in: [id, user._id] } }).populate('history');
+    if(chat.enabledImages){
+      contactData.personalImage = contact.personalImage;
+    }
+
     const data = {
       _id: chat._id,
       contact: contactData,
@@ -62,6 +67,7 @@ router.get('/:id', async (req, res, next) => {
       enabledImagesRequest: chat.enabledImagesRequest,
       enabledImages: chat.enabledImages
     };
+
     if (chat) {
       res.status(200);
       res.json(data);
