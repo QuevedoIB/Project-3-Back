@@ -61,7 +61,7 @@ router.post('/change-image', isLoggedIn(), async (req, res, next) => {
   const currentUserId = req.session.currentUser._id;
 
   try {
-    const userUpdated = await User.findByIdAndUpdate(currentUserId, { personalImage: image });
+    const userUpdated = await User.findByIdAndUpdate(currentUserId, { personalImage: image }, { new: true });
     if (userUpdated) {
       req.session.currentUser = userUpdated;
       res.status(200).json(userUpdated);
@@ -248,7 +248,7 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-function emailTransporter () {
+function emailTransporter() {
   let transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
