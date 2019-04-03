@@ -37,7 +37,12 @@ router.post('/send-match', isLoggedIn(), async (req, res, next) => {
       const pending = [userToMatchId, ...currentUser.pending];
       const matches = [currentUser._id, ...userToMatch.matches];
       await User.findByIdAndUpdate(userToMatchId, { $set: { matches } });
-      await User.findByIdAndUpdate(currentUser._id, { $set: { pending } });
+      // await User.findByIdAndUpdate(currentUser._id, { $set: { pending } });
+
+      const userWithPending = await User.findByIdAndUpdate(currentUser._id, { $set: { pending } }, { new: true });
+
+      req.session.currentUser = userWithPending;
+
       res.status(200).json({ message: 'Match sent' });
     } else {
       res.status(409).json({ message: 'Match already sent' });
