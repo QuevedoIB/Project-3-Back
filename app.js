@@ -8,8 +8,6 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
-
-// const socket = require('socket.io');
 const server = require('./bin/www');
 
 require('dotenv').config();

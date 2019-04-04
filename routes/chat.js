@@ -36,8 +36,8 @@ router.post('/create', async (req, res, next) => {
         chatId: data._id,
         numberMessages: 0
       }
-      const currentUser = await User.findByIdAndUpdate(_id, {$push:{readMessages: newChatUser}});
-      const contactUser = await User.findByIdAndUpdate(contactData._id, {$push:{readMessages: newChatUser}});
+      const currentUser = await User.findByIdAndUpdate(_id, { $push: { readMessages: newChatUser } });
+      const contactUser = await User.findByIdAndUpdate(contactData._id, { $push: { readMessages: newChatUser } });
 
 
       SocketManager.messageReceived(createdChat._id);
@@ -143,10 +143,9 @@ router.post('/send-message', async (req, res, next) => {
 router.post('/update-number-messages', async (req, res, next) => {
   const { chatId, numberMessages } = req.body;
   const { _id } = req.session.currentUser;
-  console.log(chatId, numberMessages);
+
   try {
     const user = await User.findById(_id).lean();
-    console.log('READ MESSAGES', user.readMessages);
     const userChatArray = user.readMessages.map(e => {
       if (e.chatId.equals(chatId)) {
         e.numberMessages = numberMessages;
@@ -154,11 +153,9 @@ router.post('/update-number-messages', async (req, res, next) => {
       }
       return e;
     })
-    console.log(userChatArray);
     const userUpdated = await User.findByIdAndUpdate(_id, { readMessages: userChatArray }, { new: true });
 
     if (userUpdated) {
-      console.log('USER ', userUpdated);
       req.session.currentUser = userUpdated;
       res.status(200).json(userUpdated);
     } else {
@@ -202,30 +199,18 @@ router.post('/on-typing', async (req, res, next) => {
   const { chatId, userTypingId } = req.body;
 
   await SocketManager.onTyping(chatId, userTypingId);
-  // SocketManager.onTyping(chatId);
   res.status(200);
 });
 
-// router.post('/on-typing-stop', async (req, res, next) => {
-//   const { chatId } = req.body;
-//   console.log('STOPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP');
-//   SocketManager.onStopTyping(chatId);
-//   // SocketManager.onTyping(chatId);
-//   res.status(200);
-// });
 
 router.post('/accept-request', async (req, res, next) => {
   const { id } = req.body;
   const { _id } = req.session.currentUser;
 
-  console.log(id, _id);
-
   try {
     const chat = await Chat.findById(id);
 
     const newRequests = chat.enabledImagesRequest.filter(e => !e.equals(_id));
-
-    // const updatedChat = await Chat.findByIdAndUpdate(id, { $pull: { enabledImagesRequest: _id } }, { $set: { enabledImages: true } }, { new: true });
     const updatedChat = await Chat.findByIdAndUpdate(id, { $set: { enabledImages: true, enabledImagesRequest: newRequests } }, { new: true });
 
     if (updatedChat) {
@@ -246,9 +231,8 @@ router.post('/decline-request', async (req, res, next) => {
     const chat = await Chat.findById(id);
 
     const newRequests = chat.enabledImagesRequest.filter(e => !e.equals(_id));
-
-    // const updatedChat = await Chat.findByIdAndUpdate(id, { $pull: { enabledImagesRequest: _id } }, { $set: { enabledImages: false } }, { new: true });
     const updatedChat = await Chat.findByIdAndUpdate(id, { $set: { enabledImages: false, enabledImagesRequest: newRequests } }, { new: true });
+    
     if (updatedChat) {
       SocketManager.enableImagesRequest(updatedChat._id);
       res.status(200);

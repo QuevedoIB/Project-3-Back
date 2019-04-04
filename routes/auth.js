@@ -51,10 +51,7 @@ router.post('/signup', isNotLoggedIn(), validationLoggin(), async (req, res, nex
         const salt = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
         const randomNumber = Math.floor(Math.random() * profileImagesArr.length);
-        // if (req.file) {
-        //   imageUrl = req.file.url;
-        // }
-        console.log(profileImagesArr[randomNumber].url);
+
         const newUser = {
           username,
           email,

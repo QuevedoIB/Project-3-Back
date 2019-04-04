@@ -69,7 +69,7 @@ router.post('/change-image', isLoggedIn(), async (req, res, next) => {
       res.status(409).json({ message: 'Cannot update the image' });
     }
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 

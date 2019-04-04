@@ -37,7 +37,6 @@ router.post('/send-match', isLoggedIn(), async (req, res, next) => {
       const pending = [userToMatchId, ...currentUser.pending];
       const matches = [currentUser._id, ...userToMatch.matches];
       await User.findByIdAndUpdate(userToMatchId, { $set: { matches } });
-      // await User.findByIdAndUpdate(currentUser._id, { $set: { pending } });
 
       const userWithPending = await User.findByIdAndUpdate(currentUser._id, { $set: { pending } }, { new: true });
 
