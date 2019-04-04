@@ -251,7 +251,7 @@ router.post('/report', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-function emailTransporter() {
+function emailTransporter () {
   let transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
