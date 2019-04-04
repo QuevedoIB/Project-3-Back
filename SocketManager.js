@@ -16,15 +16,9 @@ class SocketManager {
   }
 
   onTyping (chatId, userTypingId) {
-    console.log('AAAAAAAAAAAAAAAAAA', chatId, userTypingId);
     this.connectToNamespace(chatId);
     this.socket.emit('TYPING', { userTypingId });
   }
-
-  // onStopTyping (chatId) {
-  //   this.connectToNamespace(chatId);
-  //   this.socket.emit('STOP_TYPING');
-  // }
 
   connectToNamespace (nsp) {
     this.socket = this.io.of('/' + nsp);

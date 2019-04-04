@@ -69,7 +69,7 @@ router.post('/change-image', isLoggedIn(), async (req, res, next) => {
       res.status(409).json({ message: 'Cannot update the image' });
     }
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
@@ -164,6 +164,25 @@ router.get('/contacts', isLoggedIn(), async (req, res, next) => {
 
     res.status(200);
     res.json(dataContacts);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/read-messages', isLoggedIn(), async (req, res, next) => {
+  const { _id } = req.session.currentUser;
+
+  try {
+    const user = await User.findById(_id).populate('readMessages');
+    console.log('MESSAGES: ',user.readMessages);
+    if (user) {
+      res.status(200);
+      res.json(user.readMessages);
+
+    } else {
+      res.status(404).json({ message: 'Contact not found' });
+    }
+
   } catch (error) {
     next(error);
   }
