@@ -85,28 +85,28 @@ router.get('/:id', async (req, res, next) => {
 });
 
 router.post('/send-message', async (req, res, next) => {
-  const { id, message } = req.body;
+  const { id, message, date } = req.body;
   const { _id } = req.session.currentUser;
 
   try {
-    let time = new Date();
-    const dd = String(time.getDate()).padStart(2, '0');
-    const mm = String(time.getMonth() + 1).padStart(2, '0');
-    let hours = String(time.getHours());
-    let minutes = String(time.getMinutes());
+    // let time = new Date();
+    // const dd = String(time.getDate()).padStart(2, '0');
+    // const mm = String(time.getMonth() + 1).padStart(2, '0');
+    // let hours = String(time.getHours());
+    // let minutes = String(time.getMinutes());
 
-    if (minutes < 10) {
-      minutes = `0${minutes}`;
-    } else if (hours < 10) {
-      hours = `0${hours}`;
-    }
+    // if (minutes < 10) {
+    //   minutes = `0${minutes}`;
+    // } else if (hours < 10) {
+    //   hours = `0${hours}`;
+    // }
 
-    time = `${hours}:${minutes} - ${dd}/${mm}`;
+    // time = `${hours}:${minutes} - ${dd}/${mm}`;
 
     const newMessage = {
       text: message,
       user: _id,
-      date: time
+      date
     };
 
     const createdMessage = await Message.create(newMessage);
