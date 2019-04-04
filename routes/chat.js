@@ -36,8 +36,8 @@ router.post('/create', async (req, res, next) => {
         chatId: data._id,
         numberMessages: 0
       };
-      const currentUser = await User.findByIdAndUpdate(_id, { $push: { readMessages: newChatUser } });
-      const contactUser = await User.findByIdAndUpdate(contactData._id, { $push: { readMessages: newChatUser } });
+      const currentUser = await User.findByIdAndUpdate(_id, { $push: { readMessages: newChatUser } }, { new: true });
+      const contactUser = await User.findByIdAndUpdate(contactData._id, { $push: { readMessages: newChatUser } }, { new: true });
 
       SocketManager.messageReceived(createdChat._id);
       res.status(200);
