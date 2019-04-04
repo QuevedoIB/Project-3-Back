@@ -62,6 +62,17 @@ const userSchema = new Schema({
       }
     }
   ],
+  readMessages: [
+    {
+      chatId: {
+        type: ObjectId,
+        ref: 'Chat'
+      },
+      numberMessages: {
+        type: Number
+      }
+    }
+  ],
   googleUser: {
     type: Boolean,
     default: false

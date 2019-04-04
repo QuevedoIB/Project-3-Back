@@ -156,7 +156,8 @@ router.get('/contacts', isLoggedIn(), async (req, res, next) => {
         username: e.username,
         imageUrl: e.imageUrl,
         quote: e.quote,
-        interests: e.interests
+        interests: e.interests,
+        readMessages: e.readMessages
       };
       return object;
     });
