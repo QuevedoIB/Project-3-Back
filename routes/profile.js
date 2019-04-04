@@ -132,7 +132,8 @@ router.get('/matches', isLoggedIn(), async (req, res, next) => {
         username: e.username,
         imageUrl: e.imageUrl,
         quote: e.quote,
-        interests: e.interests
+        interests: e.interests,
+        readMessages: e.readMessages
       };
       return object;
     });
@@ -162,27 +163,10 @@ router.get('/contacts', isLoggedIn(), async (req, res, next) => {
       return object;
     });
 
+    req.session.currentUser = user;
+
     res.status(200);
     res.json(dataContacts);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get('/read-messages', isLoggedIn(), async (req, res, next) => {
-  const { _id } = req.session.currentUser;
-
-  try {
-    const user = await User.findById(_id).populate('readMessages');
-    console.log('MESSAGES: ',user.readMessages);
-    if (user) {
-      res.status(200);
-      res.json(user.readMessages);
-
-    } else {
-      res.status(404).json({ message: 'Contact not found' });
-    }
-
   } catch (error) {
     next(error);
   }
